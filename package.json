@@ -16,7 +16,7 @@
     "node": ">=8.0.0"
   },
   "author": "Marvin ROGER",
-  "license": "GPLv2",
+  "license": "GPLv3",
   "dependencies": {
     "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",

@@ -1,0 +1,24 @@
+{
+  "name": "iot-app",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "poi build",
+    "dev": "poi"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "author": "Marvin ROGER",
+  "license": "GPLv3",
+  "dependencies": {
+    "axios": "^0.16.2",
+    "vue": "^2.3.4",
+    "vue-router": "^2.6.0",
+    "vuetify": "^0.12.7",
+    "vuex": "^2.3.1"
+  },
+  "devDependencies": {
+    "poi": "^9.0.4"
+  }
+}
