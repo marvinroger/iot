@@ -40,6 +40,7 @@
                 :append-icon="showPassword ? 'visibility_off' : 'visibility'"
                 :append-icon-cb="() => (showPassword = !showPassword)"
                 :type="showPassword ? 'text' : 'password'"
+                :errors="loginFailed ? 'Mot de passe invalide' : ''"
                 label="Mot de passe"
               />
             </form>
@@ -51,23 +52,32 @@
 </template>
 
 <script>
+  import * as api from '../../services/api'
+
   export default {
     data () {
       return {
+        loginFailed: false,
         selectedUserId: null,
         password: '',
         showPassword: false,
-        users: [
-          { id: 0, name: 'Sandra Adams', avatar: 'https://vuetifyjs.com/static/doc-images/lists/1.jpg' },
-          { id: 1, name: 'Ali Connors', avatar: 'https://vuetifyjs.com/static/doc-images/lists/2.jpg' },
-          { id: 2, name: 'Trevor Hansen', avatar: 'https://vuetifyjs.com/static/doc-images/lists/3.jpg' },
-          { id: 3, name: 'Tucker Smith', avatar: 'https://vuetifyjs.com/static/doc-images/lists/4.jpg' }
-        ]
+        users: []
       }
     },
+    async created () {
+      if (this.$store.state.loggedIn) {
+        return this.$router.replace('/')
+      }
+
+      this.users = await api.getUsers()
+    },
     methods: {
-      handleLogin () {
-        console.log(this.selectedUserId)
+      async handleLogin () {
+        const success = await api.login({ userId: this.selectedUserId, password: this.password })
+        if (success) {
+          this.$store.commit('setLoggedIn', true)
+          this.$router.replace('/')
+        } else this.loginFailed = true
       }
     }
   }

@@ -1,5 +1,6 @@
 import {helpers} from 'inversify-vanillajs-helpers'
 import {TYPES} from '../../types'
+import {MODELS} from '../../models'
 
 export class User {
   constructor (bookshelf) {
@@ -7,11 +8,11 @@ export class User {
     this._User = this._bookshelf.Model.extend({
       tableName: 'users',
       authTokens () {
-        return this.hasMany(TYPES.models.AuthToken)
+        return this.hasMany(MODELS.AuthToken)
       }
     })
 
-    this._bookshelf.model(TYPES.models.User, this._User)
+    this._bookshelf.model(MODELS.User, this._User)
   }
 
   get () {

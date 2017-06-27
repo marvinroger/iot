@@ -1,10 +1,13 @@
 <template>
-  <p>Hey</p>
+  <div>Hey</div>
 </template>
 
 <script>
   export default {
-
+    data () {
+      return {
+      }
+    }
   }
 </script>
 

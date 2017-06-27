@@ -50,3 +50,5 @@ A device also exposes "actions", based on its state:
   }
 }
 ```
+
+"test" hash: `$2a$10$Nym42HyqR99hlDDBQBAo/.DrsvY8rBHsNckmyaIm47yZMQTnXR/nC`
