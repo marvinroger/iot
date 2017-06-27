@@ -19,14 +19,14 @@
               <template slot="selection" scope="data">
                 <div :key="data.item">
                   <v-chip class="primary white--text">
-                    <v-avatar><img :src="data.item.avatar"></v-avatar>
+                    <v-avatar><img :src="`${HTTP_API_URL}/user-avatar/${data.item.id}`" /></v-avatar>
                     {{ data.item.name }}
                   </v-chip>
                 </div>
               </template>
               <template slot="item" scope="data">
                 <v-list-tile-avatar>
-                  <img :src="data.item.avatar"/>
+                  <img :src="`${HTTP_API_URL}/user-avatar/${data.item.id}`"/>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
                   <v-list-tile-title>{{ data.item.name }}</v-list-tile-title>
@@ -52,11 +52,13 @@
 </template>
 
 <script>
+  import {HTTP_API_URL} from '../../constants'
   import * as api from '../../services/api'
 
   export default {
     data () {
       return {
+        HTTP_API_URL,
         loginFailed: false,
         selectedUserId: null,
         password: '',

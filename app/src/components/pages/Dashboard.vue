@@ -5,7 +5,7 @@
           <v-list-item>
             <v-list-tile avatar tag="div">
               <v-list-tile-avatar>
-                <img src="https://randomuser.me/api/portraits/men/85.jpg" />
+                <img :src="`${HTTP_API_URL}/user-avatar/${$store.state.user.id}`" />
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title>{{ $store.state.user.name }}</v-list-tile-title>
@@ -45,9 +45,12 @@
 </template>
 
 <script>
+  import {HTTP_API_URL} from '../../constants'
+
   export default {
     data () {
       return {
+        HTTP_API_URL,
         drawer: true,
         items: [
           { title: 'Périphériques', icon: 'dashboard', url: '/dashboard/' },

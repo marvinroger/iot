@@ -13,6 +13,7 @@ export function up (knex) {
       t.increments('id').primary()
       t.text('name').notNullable()
       t.string('password', 60).notNullable() // Bcrypt = 60
+      t.enum('role', ['guest', 'resident', 'admin']).notNullable()
       t.dateTime('last_connection')
     })
     .createTable('auth_tokens', (t) => {

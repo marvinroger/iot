@@ -1,6 +1,8 @@
 import {helpers} from 'inversify-vanillajs-helpers'
 import {TYPES} from '../types'
 
+import path from 'path'
+
 import express from 'express'
 import bodyParser from 'body-parser'
 import uuid from 'uuid'
@@ -46,6 +48,10 @@ export class ExpressApp {
       return res.json({
         users
       })
+    })
+
+    this._app.get('/api/user-avatar/:id', async (req, res) => {
+      res.sendFile(path.join(__dirname, '../assets/no-avatar.png'))
     })
 
     this._app.post('/api/login', async (req, res) => {
