@@ -1,10 +1,6 @@
 <template>
-  <v-app>
-    <v-card>
-      <v-card-text>
-        lol
-      </v-card-text>
-    </v-card>
+  <v-app class="app">
+    <router-view></router-view>
   </v-app>
 </template>
 
@@ -20,5 +16,15 @@
   }
 </script>
 
+<style scoped>
+  .app {
+    background: none;
+  }
+</style>
+
 <style>
+  body {
+    background: url(../assets/bg.jpg) no-repeat center center fixed;
+    background-size: cover;
+  }
 </style>
