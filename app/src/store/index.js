@@ -59,6 +59,11 @@ export const store = new Vuex.Store({
         commit('setWebsocketConnected', false)
       })
       ws.start()
+    },
+    disconnectFromWebsocket ({ state, commit }) {
+      if (!state.websocket.instance) return
+      state.websocket.instance.stop()
+      state.websocket.instance = null
     }
   }
 })

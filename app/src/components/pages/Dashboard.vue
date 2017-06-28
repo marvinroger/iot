@@ -39,7 +39,7 @@
       <v-btn light icon :ripple="false" v-tooltip:bottom="{ html: $store.state.websocket.connected ? 'Connexion OK' : 'Pas de connexion' }">
         <v-icon>{{ $store.state.websocket.connected ? 'network_wifi' : 'wifi_off' }}</v-icon>
       </v-btn>
-      <v-btn light icon v-tooltip:bottom="{ html: 'Déconnexion' }">
+      <v-btn light icon @click.native="logout" v-tooltip:bottom="{ html: 'Déconnexion' }">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
     </v-toolbar>
@@ -53,6 +53,7 @@
 
 <script>
   import {HTTP_API_URL} from '../../constants'
+  import * as api from '../../services/api'
 
   export default {
     data () {
@@ -68,6 +69,13 @@
     },
     created () {
       this.$store.dispatch('connectToWebsocket')
+    },
+    methods: {
+      async logout () {
+        await api.logout()
+        this.$store.commit('setLoggedIn', false)
+        this.$router.replace('/login')
+      }
     }
   }
 </script>
