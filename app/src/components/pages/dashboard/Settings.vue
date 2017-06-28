@@ -1,5 +1,5 @@
 <template>
-  <div>Périphériques</div>
+  <div>Paramètres</div>
 </template>
 
 <script>

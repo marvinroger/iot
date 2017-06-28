@@ -8,6 +8,7 @@ import Login from '../components/pages/Login'
 import Dashboard from '../components/pages/Dashboard'
 
 import DashboardDevices from '../components/pages/dashboard/Devices'
+import DashboardSettings from '../components/pages/dashboard/Settings'
 
 Vue.use(VueRouter)
 
@@ -19,7 +20,8 @@ export const router = new VueRouter({
       component: Dashboard,
       meta: { title: '🏠 Panneau de contrôle', requiresAuth: true },
       children: [
-        { path: '/', component: DashboardDevices, meta: { title: 'Périphériques' } }
+        { path: '/', component: DashboardDevices, meta: { title: 'Périphériques' } },
+        { path: 'settings', component: DashboardSettings, meta: { title: 'Paramètres' } }
       ]
     },
     { path: '/login', component: Login, meta: { title: '🔑 Connexion', requiresAuth: false } },

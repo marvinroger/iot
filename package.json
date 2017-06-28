@@ -10,7 +10,8 @@
     "start": "node lib/bin/cli.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --out-dir lib",
-    "dev": "babel-watch src/bin/cli.js -- start"
+    "dev": "babel-watch src/bin/cli.js -- start",
+    "dev-all": "concurrently --names \"server,client\" --prefix-colors \"magenta,green\" \"npm run dev\" \"cd app && npm run dev\""
   },
   "engines": {
     "node": ">=8.0.0"
@@ -38,6 +39,7 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
-    "babel-watch": "^2.0.6"
+    "babel-watch": "^2.0.6",
+    "concurrently": "^3.5.0"
   }
 }

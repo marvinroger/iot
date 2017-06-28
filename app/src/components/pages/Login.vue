@@ -82,6 +82,7 @@
           console.log(res)
           this.$store.commit('setUserId', res.user.id)
           this.$store.commit('setUserName', res.user.name)
+          this.$store.commit('setUserRole', res.user.role)
           this.$store.commit('setLoggedIn', true)
           this.$router.replace('/')
         } else this.loginFailed = true

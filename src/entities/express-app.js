@@ -73,7 +73,8 @@ export class ExpressApp {
         }).json({
           user: {
             id: userModel.id,
-            name: userModel.attributes['name']
+            name: userModel.attributes['name'],
+            role: userModel.attributes['role']
           }
         })
       } else {
@@ -106,11 +107,14 @@ export class ExpressApp {
           loggedIn: false
         })
       } else {
+        const userModel = tokenModel.related('user')
+
         return res.json({
           loggedIn: true,
           user: {
-            id: tokenModel.related('user').id,
-            name: tokenModel.related('user').attributes['name']
+            id: userModel.id,
+            name: userModel.attributes['name'],
+            role: userModel.attributes['role']
           }
         })
       }

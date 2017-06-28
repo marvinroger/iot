@@ -30,6 +30,7 @@
       if (res.loggedIn) {
         this.$store.commit('setUserId', res.user.id)
         this.$store.commit('setUserName', res.user.name)
+        this.$store.commit('setUserRole', res.user.role)
       }
       this.$store.commit('setLoading', false)
       this.dialog = false
