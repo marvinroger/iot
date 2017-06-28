@@ -35,7 +35,7 @@ router.beforeEach((to, from, next) => {
     })
   }
 
-  if (to.meta.requiresAuth && !store.state.loggedIn) {
+  if (to.matched.some(route => route.meta.requiresAuth) && !store.state.loggedIn) {
     next('/login')
   } else {
     next()

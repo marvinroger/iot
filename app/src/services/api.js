@@ -9,8 +9,8 @@ export async function getUsers () {
 
 export async function login ({ userId, password }) {
   try {
-    await axios.post(`${HTTP_API_URL}/login`, { userId, password }, { withCredentials: true })
-    return true
+    const res = await axios.post(`${HTTP_API_URL}/login`, { userId, password }, { withCredentials: true })
+    return res.data
   } catch (err) {
     if (err.response) return false
     else throw err

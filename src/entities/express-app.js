@@ -70,7 +70,12 @@ export class ExpressApp {
         return res.cookie('ACCESSTOKEN', token, {
           expires: never,
           httpOnly: true
-        }).sendStatus(204)
+        }).json({
+          user: {
+            id: userModel.id,
+            name: userModel.attributes['name']
+          }
+        })
       } else {
         return res.sendStatus(401)
       }

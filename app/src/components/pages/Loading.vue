@@ -1,16 +1,18 @@
 <template>
-  <v-dialog v-model="dialog" persistent>
-    <v-card>
-      <v-card-row>
-        <v-card-text>
-          <p class="text-xs-center">
-            <v-progress-circular indeterminate :size="50" class="primary--text"></v-progress-circular><br>
-            Veuillez patienter...
-          </p>
-        </v-card-text>
-      </v-card-row>
-    </v-card>
-  </v-dialog>
+  <v-app>
+    <v-dialog v-model="dialog" persistent>
+      <v-card>
+        <v-card-row>
+          <v-card-text>
+            <p class="text-xs-center">
+              <v-progress-circular indeterminate :size="50" class="primary--text"></v-progress-circular><br>
+              Veuillez patienter...
+            </p>
+          </v-card-text>
+        </v-card-row>
+      </v-card>
+    </v-dialog>
+  </v-app>
 </template>
 
 <script>
@@ -25,8 +27,10 @@
     async created () {
       const res = await api.isLoggedIn()
       this.$store.commit('setLoggedIn', res.loggedIn)
-      this.$store.commit('setUserId', res.user.id)
-      this.$store.commit('setUserName', res.user.name)
+      if (res.loggedIn) {
+        this.$store.commit('setUserId', res.user.id)
+        this.$store.commit('setUserName', res.user.name)
+      }
       this.$store.commit('setLoading', false)
       this.dialog = false
 
