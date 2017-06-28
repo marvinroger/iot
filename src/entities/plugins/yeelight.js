@@ -53,6 +53,24 @@ export class Yeelight {
           value: [255, 0, 0]
         }
       })
+
+      await device.setActions({
+        turnOff: {
+          name: 'Éteindre'
+        },
+        setIntensity: {
+          name: "Définir l'intensité",
+          accepts: [
+            { type: 'range', range: [0, 100] }
+          ]
+        },
+        setColor: {
+          name: 'Définir la couleur',
+          accepts: [
+            { type: 'color' }
+          ]
+        }
+      })
     })
   }
 

@@ -1,5 +1,5 @@
 <template>
-  <v-app id="example-2">
+  <v-app>
     <v-navigation-drawer persistent light :mini-variant.sync="mini" v-model="drawer">
       <v-list class="pa-0">
         <v-list-item>

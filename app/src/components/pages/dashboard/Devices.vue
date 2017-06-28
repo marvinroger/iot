@@ -1,5 +1,24 @@
 <template>
   <div>
+    <v-dialog v-model="action.paramsDialog" persistent>
+      <v-card>
+        <v-card-row>
+          <v-card-title>{{ action.action.name }}</v-card-title>
+        </v-card-row>
+        <v-card-row>
+          <v-card-text>
+            <div v-for="(parameter, index) in action.action.accepts" :key="index">
+              <v-slider v-if="parameter.type === 'range'" :min="parameter.range[0]" :max="parameter.range[1]" thumb-label v-model="action.givenParams[index]"></v-slider>
+            </div>
+          </v-card-text>
+        </v-card-row>
+        <v-card-row actions>
+          <v-btn class="red--text" flat @click.native="action.paramsDialog = false">Annuler</v-btn>
+          <v-btn class="red--text" flat @click.native="action.paramsDialog = false">OK</v-btn>
+        </v-card-row>
+      </v-card>
+    </v-dialog>
+
     <h4>Périphériques</h4>
 
     <v-layout wrap>
@@ -29,8 +48,12 @@
             </v-data-table>
           </v-card-text>
           <v-divider></v-divider>
-          <v-card-row actions>
-            <v-btn flat class="red--text">View Email</v-btn>
+          <v-card-row>
+            <v-card-text>
+              <v-layout wrap justify-space-around>
+                <v-btn @click.native="handleAction(action[0], action[1])" v-for="action in Object.entries(device.actions)" :key="action[0]" flat class="red--text">{{ action[1].name }}</v-btn>
+              </v-layout>
+            </v-card-text>
           </v-card-row>
         </v-card>
       </v-flex>
@@ -42,6 +65,24 @@
   export default {
     data () {
       return {
+        action: {
+          paramsDialog: false,
+          id: null,
+          action: {},
+          givenParams: {}
+        }
+      }
+    },
+    methods: {
+      handleAction (id, action) {
+        this.action.id = id
+        this.action.action = action
+        this.action.paramsDialog = true
+
+        for (const paramIndex in this.action.action.accepts) {
+          this.action.givenParams[paramIndex] = 0
+          this.action.givenParams = JSON.parse(JSON.stringify(this.action.givenParams))
+        }
       }
     }
   }
