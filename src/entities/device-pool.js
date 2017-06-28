@@ -17,6 +17,8 @@ class Device {
   getPlugin () { return this._plugin }
 
   getId () { return this._id }
+  getType () { return this._type }
+  getName () { return this._name }
 
   getOnline () { return this._online }
   setOnline (online) {

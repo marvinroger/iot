@@ -31,9 +31,28 @@ export class Yeelight {
       }
 
       this._discovered[id].yeelightInstance = lightBulb
-      await this._discovered[id].device.setOnline(true)
 
-      this._discovered[id].yeelightInstance.setRGB('#0000ff')
+      const device = this._discovered[id].device
+      await device.setOnline(true)
+
+      await device.setProperties({
+        on: {
+          name: 'Allumé',
+          type: 'boolean',
+          value: true
+        },
+        intensity: {
+          name: 'Intensité',
+          type: 'range',
+          range: [0, 100],
+          value: 50
+        },
+        color: {
+          name: 'Couleur',
+          type: 'color',
+          value: [255, 0, 0]
+        }
+      })
     })
   }
 

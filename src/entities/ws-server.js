@@ -4,6 +4,8 @@ import {TYPES} from '../types'
 import WebSocket from 'ws'
 import cookie from 'cookie'
 
+import {generateMessage, parseMessage, MESSAGE_TYPES, EVENTS} from '../../common/ws-messages'
+
 export class WsServer {
   constructor (httpServer, authTokenModel, devicePool) {
     const AuthToken = authTokenModel.get()
@@ -45,8 +47,16 @@ export class WsServer {
       // sending initial messages
 
       for (const device of this._devicePool.getDevices()) {
-        ws.send(JSON.stringify({
-          id: device.getId()
+        ws.send(generateMessage({
+          type: MESSAGE_TYPES.EVENT,
+          event: EVENTS.DEVICE,
+          value: {
+            id: device.getId(),
+            online: device.getOnline(),
+            name: device.getName(),
+            properties: device.getProperties(),
+            actions: device.getActions()
+          }
         }))
       }
     })
