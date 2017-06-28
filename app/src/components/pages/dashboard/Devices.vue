@@ -3,7 +3,7 @@
     <h4>Périphériques</h4>
 
     <v-layout wrap>
-      <v-flex v-for="device in Object.values($store.state.devices)" xs4>
+      <v-flex v-for="device in Object.values($store.state.devices)" :key="device.id" xs4>
         <v-card>
           <v-card-row class="red accent-1">
             <v-card-title>{{ device.name }}</v-card-title>
@@ -28,6 +28,10 @@
               </template>
             </v-data-table>
           </v-card-text>
+          <v-divider></v-divider>
+          <v-card-row actions>
+            <v-btn flat class="red--text">View Email</v-btn>
+          </v-card-row>
         </v-card>
       </v-flex>
     </v-layout>
