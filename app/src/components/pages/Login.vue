@@ -79,7 +79,6 @@
       async handleLogin () {
         const res = await api.login({ userId: this.selectedUserId, password: this.password })
         if (res) {
-          console.log(res)
           this.$store.commit('setUserId', res.user.id)
           this.$store.commit('setUserName', res.user.name)
           this.$store.commit('setUserRole', res.user.role)

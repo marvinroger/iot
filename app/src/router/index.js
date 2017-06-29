@@ -21,7 +21,7 @@ export const router = new VueRouter({
       meta: { title: '🏠 Panneau de contrôle', requiresAuth: true },
       children: [
         { path: '/', component: DashboardDevices, meta: { title: 'Périphériques' } },
-        { path: 'settings', component: DashboardSettings, meta: { title: 'Paramètres' } }
+        { path: 'settings', component: DashboardSettings, meta: { title: 'Paramètres', requiresRole: ['admin'] } }
       ]
     },
     { path: '/login', component: Login, meta: { title: '🔑 Connexion', requiresAuth: false } },
@@ -38,10 +38,14 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.matched.some(route => route.meta.requiresAuth) && !store.state.loggedIn) {
-    next('/login')
-  } else {
-    next()
+    return next('/login')
   }
+
+  if (to.matched.some(route => route.meta.requiresRole && !route.meta.requiresRole.includes(store.state.user.role))) {
+    return next('/')
+  }
+
+  next()
 })
 
 router.afterEach((to, from) => {

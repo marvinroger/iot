@@ -20,7 +20,7 @@
       </v-list>
       <v-list class="pt-0" dense>
         <v-divider></v-divider>
-        <v-list-item v-for="item in items" :key="item">
+        <v-list-item v-for="item in items" :key="item" v-if="!item.requiresRole || item.requiresRole.includes($store.state.user.role)">
           <v-list-tile router :to="item.url" exact>
             <v-list-tile-action>
               <v-icon>{{ item.icon }}</v-icon>
@@ -62,7 +62,7 @@
         drawer: true,
         items: [
           { title: 'Périphériques', icon: 'dashboard', url: '/dashboard' },
-          { title: 'Paramètres', icon: 'settings', url: '/dashboard/settings' }
+          { title: 'Paramètres', icon: 'settings', url: '/dashboard/settings', requiresRole: ['admin'] }
         ],
         mini: false
       }

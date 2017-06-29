@@ -11,7 +11,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --out-dir lib",
     "dev": "babel-watch src/bin/cli.js -- start",
-    "dev-all": "concurrently --names \"server,client\" --prefix-colors \"magenta,green\" \"npm run dev\" \"cd app && npm run dev\""
+    "dev-all": "concurrently --names \"server,client\" --prefix-colors \"magenta,green\" \"npm run dev\" \"cd app && npm run dev\"",
+    "install-all": "npm install && cd app && npm install"
   },
   "engines": {
     "node": ">=8.0.0"
