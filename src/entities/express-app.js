@@ -51,7 +51,7 @@ export class ExpressApp {
     })
 
     this._app.get('/api/user-avatar/:id', async (req, res) => {
-      res.sendFile(path.join(__dirname, '../assets/no-avatar.png'))
+      res.sendFile(path.join(__dirname, '../assets/sample-avatar.jpg'))
     })
 
     this._app.post('/api/login', async (req, res) => {
