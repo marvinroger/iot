@@ -62,6 +62,12 @@ export class WsServer {
     })
   }
 
+  broadcast (message) {
+    for (const client of this._clients) {
+      client.send(message)
+    }
+  }
+
   get () {
     return this._wsServer
   }

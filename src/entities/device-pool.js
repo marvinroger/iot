@@ -23,25 +23,55 @@ class Device {
   getOnline () { return this._online }
   setOnline (online) {
     this._online = online
-    return this._model.save({ online })
   }
 
   getProperties () { return this._properties }
   setProperties (properties) {
-    this._properties = properties
-    return this._model.save({ properties })
+    Object.assign(this._properties, properties)
+  }
+  removeProperties (properties) {
+    for (const property of properties) {
+      delete this._properties[property]
+    }
+  }
+  clearProperties () {
+    this._properties = {}
   }
 
   getCredentials () { return this._credentials }
   setCredentials (credentials) {
-    this._credentials = credentials
-    return this._model.save({ credentials })
+    Object.assign(this._credentials, credentials)
+  }
+  removeCredentials (credentials) {
+    for (const credential of credentials) {
+      delete this._credentials[credential]
+    }
+  }
+  clearCredentials () {
+    this._credentials = {}
   }
 
   getActions () { return this._actions }
   setActions (actions) {
-    this._actions = actions
+    Object.assign(this._actions, actions)
     return this._model.save({ actions })
+  }
+  removeActions (actions) {
+    for (const action of actions) {
+      delete this._actions[action]
+    }
+  }
+  clearActions () {
+    this._actions = {}
+  }
+
+  sync () {
+    return this._model.save({
+      online: this._online,
+      action: this._actions,
+      properties: this._properties,
+      credentials: this._credentials
+    })
   }
 }
 

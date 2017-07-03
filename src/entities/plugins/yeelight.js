@@ -33,9 +33,8 @@ export class Yeelight {
       this._discovered[id].yeelightInstance = lightBulb
 
       const device = this._discovered[id].device
-      await device.setOnline(true)
-
-      await device.setProperties({
+      device.setOnline(true)
+      device.setProperties({
         on: {
           name: 'Allumé',
           type: 'boolean',
@@ -53,8 +52,7 @@ export class Yeelight {
           value: [255, 0, 0]
         }
       })
-
-      await device.setActions({
+      device.setActions({
         turnOff: {
           name: 'Éteindre'
         },
@@ -71,6 +69,7 @@ export class Yeelight {
           ]
         }
       })
+      await device.sync()
     })
   }
 
