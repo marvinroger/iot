@@ -41,7 +41,7 @@ export class WsServer {
       })
 
       ws.on('message', (data) => {
-        console.log(data)
+        parseMessage(data)
       })
 
       // sending initial messages

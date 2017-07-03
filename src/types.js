@@ -9,13 +9,17 @@ export const TYPES = {
   ExpressApp: Symbol('ExpressApp'),
   Discoverer: Symbol('Discoverer'),
   DevicePool: Symbol('DevicePool'),
+  Device: Symbol('Device'),
+  factories: {
+    Device: Symbol('Factory<Device>')
+  },
   models: {
-    Device: Symbol('Device'),
-    AuthToken: Symbol('AuthToken'),
-    User: Symbol('User')
+    Device: Symbol('Model<Device>'),
+    AuthToken: Symbol('Model<AuthToken>'),
+    User: Symbol('Model<User>')
   },
   plugins: {
-    Yeelight: Symbol('Yeelight'),
-    Aqara: Symbol('Aqara')
+    Yeelight: Symbol('Plugin<Yeelight>'),
+    Aqara: Symbol('Plugin<Aqara>')
   }
 }

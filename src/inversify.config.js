@@ -12,9 +12,11 @@ import {ExpressApp} from './entities/express-app'
 import {Discoverer} from './entities/discoverer'
 import {DevicePool} from './entities/device-pool'
 
-import {Device} from './entities/models/device'
-import {User} from './entities/models/user'
-import {AuthToken} from './entities/models/auth-token'
+import {Device} from './entities/device'
+
+import {Device as DeviceModel} from './entities/models/device'
+import {User as UserModel} from './entities/models/user'
+import {AuthToken as AuthTokenModel} from './entities/models/auth-token'
 
 import {Yeelight} from './entities/plugins/yeelight'
 import {Aqara} from './entities/plugins/aqara'
@@ -31,9 +33,12 @@ container.bind(TYPES.ExpressApp).to(ExpressApp).inSingletonScope()
 container.bind(TYPES.Discoverer).to(Discoverer).inSingletonScope()
 container.bind(TYPES.DevicePool).to(DevicePool).inSingletonScope()
 
-container.bind(TYPES.models.Device).to(Device).inSingletonScope()
-container.bind(TYPES.models.User).to(User).inSingletonScope()
-container.bind(TYPES.models.AuthToken).to(AuthToken).inSingletonScope()
+container.bind(TYPES.Device).to(Device)
+container.bind(TYPES.factories.Device).toAutoFactory(TYPES.Device)
+
+container.bind(TYPES.models.Device).to(DeviceModel).inSingletonScope()
+container.bind(TYPES.models.User).to(UserModel).inSingletonScope()
+container.bind(TYPES.models.AuthToken).to(AuthTokenModel).inSingletonScope()
 
 container.bind(TYPES.plugins.Yeelight).to(Yeelight).inSingletonScope()
 container.bind(TYPES.plugins.Aqara).to(Aqara).inSingletonScope()
