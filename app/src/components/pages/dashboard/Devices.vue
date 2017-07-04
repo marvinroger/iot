@@ -1,5 +1,53 @@
 <template>
   <div>
+    <h4>Périphériques</h4>
+
+    <v-layout wrap>
+      <v-flex v-for="device in Object.values($store.state.devices)" :key="device.id" xs4>
+        <v-card>
+          <v-card-row class="red accent-1">
+            <v-card-title>{{ device.name }}</v-card-title>
+          </v-card-row>
+
+          <v-card-row>
+            <v-card-text>
+              <img src="/img/devices/lamp.svg" class="device-image" />
+            </v-card-text>
+          </v-card-row>
+
+          <v-card-row>
+            <v-card-text>
+              <v-data-table
+                :headers="[{ text: 'Propriété', sortable: false, left: true }, { text: 'Valeur', sortable: false, left: true }]"
+                :items="Object.values(device.properties)"
+                hide-actions
+                class="elevation-1"
+              >
+                <template slot="items" scope="props">
+                  <td>{{ props.item.name }}</td>
+                  <td>
+                    <v-switch v-if="props.item.type === 'boolean'" v-model="props.item.value" disabled></v-switch>
+                    <v-progress-linear v-else-if="props.item.type === 'range'" v-model="props.item.value"></v-progress-linear>
+                    <v-icon v-else-if="props.item.type === 'color'" :style="{
+                      color: `rgb(${props.item.value[0]}, ${props.item.value[1]}, ${props.item.value[2]})`
+                    }">color_lens</v-icon>
+                  </td>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card-row>
+          <v-divider></v-divider>
+          <v-card-row>
+            <v-card-text>
+              <v-layout wrap justify-space-around>
+                <v-btn @click.native="handleAction(action[0], action[1])" v-for="action in Object.entries(device.actions)" :key="action[0]" flat class="red--text">{{ action[1].name }}</v-btn>
+              </v-layout>
+            </v-card-text>
+          </v-card-row>
+        </v-card>
+      </v-flex>
+    </v-layout>
+
     <v-dialog v-model="action.paramsDialog" persistent>
       <v-card>
         <v-card-row>
@@ -18,46 +66,6 @@
         </v-card-row>
       </v-card>
     </v-dialog>
-
-    <h4>Périphériques</h4>
-
-    <v-layout wrap>
-      <v-flex v-for="device in Object.values($store.state.devices)" :key="device.id" xs4>
-        <v-card>
-          <v-card-row class="red accent-1">
-            <v-card-title>{{ device.name }}</v-card-title>
-          </v-card-row>
-
-          <v-card-text>
-            <v-data-table
-              :headers="[{ text: 'Propriété', sortable: false, left: true }, { text: 'Valeur', sortable: false, left: true }]"
-              :items="Object.values(device.properties)"
-              hide-actions
-              class="elevation-1"
-            >
-              <template slot="items" scope="props">
-                <td>{{ props.item.name }}</td>
-                <td>
-                  <v-switch v-if="props.item.type === 'boolean'" v-model="props.item.value" disabled></v-switch>
-                  <v-progress-linear v-else-if="props.item.type === 'range'" v-model="props.item.value"></v-progress-linear>
-                  <v-icon v-else-if="props.item.type === 'color'" :style="{
-                    color: `rgb(${props.item.value[0]}, ${props.item.value[1]}, ${props.item.value[2]})`
-                  }">color_lens</v-icon>
-                </td>
-              </template>
-            </v-data-table>
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-row>
-            <v-card-text>
-              <v-layout wrap justify-space-around>
-                <v-btn @click.native="handleAction(action[0], action[1])" v-for="action in Object.entries(device.actions)" :key="action[0]" flat class="red--text">{{ action[1].name }}</v-btn>
-              </v-layout>
-            </v-card-text>
-          </v-card-row>
-        </v-card>
-      </v-flex>
-    </v-layout>
   </div>
 </template>
 
@@ -88,5 +96,11 @@
   }
 </script>
 
-<style>
+<style scoped>
+  .device-image {
+    display: block;
+    margin: 0 auto;
+
+    height: 100px;
+  }
 </style>
