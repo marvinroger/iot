@@ -1,0 +1,3 @@
+export const EVENT_TYPES = {
+  DEVICE_UPDATE: 'DEVICE_UPDATE'
+}

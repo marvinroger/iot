@@ -8,6 +8,7 @@ export const TYPES = {
   WsServer: Symbol('WsServer'),
   ExpressApp: Symbol('ExpressApp'),
   Discoverer: Symbol('Discoverer'),
+  UpdateBus: Symbol('UpdateBus'),
   DevicePool: Symbol('DevicePool'),
   Device: Symbol('Device'),
   factories: {

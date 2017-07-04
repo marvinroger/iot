@@ -3,7 +3,9 @@ import Vuex from 'vuex'
 
 import {WebSocket} from '../lib/websocket'
 import {WS_API_URL} from '../constants'
-import {parseMessage, MESSAGE_TYPES, EVENTS} from '../../../common/ws-messages'
+import {parseMessage, MESSAGE_TYPES} from '../../../common/ws-messages'
+import {EVENT_TYPES} from '../../../common/event-types'
+import {DEVICE_UPDATE_TYPES} from '../../../common/device-update-types'
 
 Vue.use(Vuex)
 
@@ -44,9 +46,33 @@ export const store = new Vuex.Store({
     setWebsocketInstance (state, instance) {
       state.websocket.instance = instance
     },
-    addDevice (state, device) {
-      state.devices[device.id] = device
-      state.devices = JSON.parse(JSON.stringify(state.devices))
+    handleDeviceUpdate (state, update) {
+      // devices
+      if (update.type === DEVICE_UPDATE_TYPES.DEVICE_ADDED) {
+        Vue.set(state.devices, update.id, update.value)
+      } else if (update.type === DEVICE_UPDATE_TYPES.DEVICE_REMOVED) {
+        delete state.devices[update.id]
+      } else if (update.type === DEVICE_UPDATE_TYPES.ONLINE_SET) {
+        state.devices[update.id].online = update.value
+      // properties
+      } else if (update.type === DEVICE_UPDATE_TYPES.PROPERTIES_CLEARED) {
+        state.devices[update.id].properties = {}
+      } else if (update.type === DEVICE_UPDATE_TYPES.PROPERTIES_SET) {
+        state.devices[update.id].properties = Object.assign({}, state.devices[update.id].properties, update.value)
+      } else if (update.type === DEVICE_UPDATE_TYPES.PROPERTIES_REMOVED) {
+        for (const property of update.value) {
+          delete state.devices[update.id].properties[property]
+        }
+      // actions
+      } else if (update.type === DEVICE_UPDATE_TYPES.ACTIONS_CLEARED) {
+        state.devices[update.id].actions = {}
+      } else if (update.type === DEVICE_UPDATE_TYPES.ACTIONS_SET) {
+        state.devices[update.id].actions = Object.assign({}, state.devices[update.id].actions, update.value)
+      } else if (update.type === DEVICE_UPDATE_TYPES.ACTIONS_REMOVED) {
+        for (const action of update.value) {
+          delete state.devices[update.id].actions[action]
+        }
+      }
     }
   },
   actions: {
@@ -82,8 +108,8 @@ const wsMessageHandler = (message) => {
   if (parsed.type !== MESSAGE_TYPES.EVENT) return
 
   switch (parsed.event) {
-    case EVENTS.DEVICE:
-      store.commit('addDevice', parsed.value)
+    case EVENT_TYPES.DEVICE_UPDATE:
+      store.commit('handleDeviceUpdate', parsed.value)
       break
   }
 }

@@ -1,7 +1,12 @@
 import {helpers} from 'inversify-vanillajs-helpers'
+import {TYPES} from '../types'
+
+import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
 
 export class Device {
-  constructor () {
+  constructor (updateBus) {
+    this._updateBus = updateBus
+
     this._model = null
     this._plugin = null
     this._id = null
@@ -34,19 +39,23 @@ export class Device {
   getOnline () { return this._online }
   setOnline (online) {
     this._online = online
+    this._updateBus.notify(DEVICE_UPDATE_TYPES.ONLINE_SET, this._id, online)
   }
 
   getProperties () { return this._properties }
   setProperties (properties) {
     Object.assign(this._properties, properties)
+    this._updateBus.notify(DEVICE_UPDATE_TYPES.PROPERTIES_SET, this._id, properties)
   }
   removeProperties (properties) {
     for (const property of properties) {
       delete this._properties[property]
     }
+    this._updateBus.notify(DEVICE_UPDATE_TYPES.PROPERTIES_REMOVED, this._id, properties)
   }
   clearProperties () {
     this._properties = {}
+    this._updateBus.notify(DEVICE_UPDATE_TYPES.PROPERTIES_CLEARED, this._id)
   }
 
   getCredentials () { return this._credentials }
@@ -65,15 +74,17 @@ export class Device {
   getActions () { return this._actions }
   setActions (actions) {
     Object.assign(this._actions, actions)
-    return this._model.save({ actions })
+    this._updateBus.notify(DEVICE_UPDATE_TYPES.ACTIONS_SET, this._id, actions)
   }
   removeActions (actions) {
     for (const action of actions) {
       delete this._actions[action]
     }
+    this._updateBus.notify(DEVICE_UPDATE_TYPES.ACTIONS_REMOVED, this._id, actions)
   }
   clearActions () {
     this._actions = {}
+    this._updateBus.notify(DEVICE_UPDATE_TYPES.ACTIONS_CLEARED, this._id)
   }
 
   sync () {
@@ -86,4 +97,4 @@ export class Device {
   }
 }
 
-helpers.annotate(Device)
+helpers.annotate(Device, [TYPES.UpdateBus])

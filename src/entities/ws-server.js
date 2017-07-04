@@ -4,12 +4,15 @@ import {TYPES} from '../types'
 import WebSocket from 'ws'
 import cookie from 'cookie'
 
-import {generateMessage, parseMessage, MESSAGE_TYPES, EVENTS} from '../../common/ws-messages'
+import {generateMessage, parseMessage, MESSAGE_TYPES} from '../../common/ws-messages'
+import {EVENT_TYPES} from '../../common/event-types'
+import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
 
 export class WsServer {
-  constructor (httpServer, authTokenModel, devicePool) {
+  constructor (httpServer, authTokenModel, devicePool, updateBus) {
     const AuthToken = authTokenModel.get()
     this._devicePool = devicePool
+    this._updateBus = updateBus
 
     this._wsServer = new WebSocket.Server({
       server: httpServer.get(),
@@ -26,6 +29,14 @@ export class WsServer {
     })
 
     this._clients = new Set()
+
+    this._updateBus.on('update', (data) => {
+      this.broadcast(generateMessage({
+        type: MESSAGE_TYPES.EVENT,
+        event: EVENT_TYPES.DEVICE_UPDATE,
+        value: data
+      }))
+    })
   }
 
   setup () {
@@ -49,13 +60,16 @@ export class WsServer {
       for (const device of this._devicePool.getDevices()) {
         ws.send(generateMessage({
           type: MESSAGE_TYPES.EVENT,
-          event: EVENTS.DEVICE,
+          event: EVENT_TYPES.DEVICE_UPDATE,
           value: {
+            type: DEVICE_UPDATE_TYPES.DEVICE_ADDED,
             id: device.getId(),
-            online: device.getOnline(),
-            name: device.getName(),
-            properties: device.getProperties(),
-            actions: device.getActions()
+            value: {
+              online: device.getOnline(),
+              name: device.getName(),
+              properties: device.getProperties(),
+              actions: device.getActions()
+            }
           }
         }))
       }
@@ -64,7 +78,7 @@ export class WsServer {
 
   broadcast (message) {
     for (const client of this._clients) {
-      client.send(message)
+      client.ws.send(message)
     }
   }
 
@@ -73,4 +87,4 @@ export class WsServer {
   }
 }
 
-helpers.annotate(WsServer, [TYPES.HttpServer, TYPES.models.AuthToken, TYPES.DevicePool])
+helpers.annotate(WsServer, [TYPES.HttpServer, TYPES.models.AuthToken, TYPES.DevicePool, TYPES.UpdateBus])

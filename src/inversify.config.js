@@ -9,6 +9,7 @@ import {Bookshelf} from './entities/bookshelf'
 import {HttpServer} from './entities/http-server'
 import {WsServer} from './entities/ws-server'
 import {ExpressApp} from './entities/express-app'
+import {UpdateBus} from './entities/update-bus'
 import {Discoverer} from './entities/discoverer'
 import {DevicePool} from './entities/device-pool'
 
@@ -30,6 +31,7 @@ container.bind(TYPES.Bookshelf).to(Bookshelf).inSingletonScope()
 container.bind(TYPES.HttpServer).to(HttpServer).inSingletonScope()
 container.bind(TYPES.WsServer).to(WsServer).inSingletonScope()
 container.bind(TYPES.ExpressApp).to(ExpressApp).inSingletonScope()
+container.bind(TYPES.UpdateBus).to(UpdateBus).inSingletonScope()
 container.bind(TYPES.Discoverer).to(Discoverer).inSingletonScope()
 container.bind(TYPES.DevicePool).to(DevicePool).inSingletonScope()
 
