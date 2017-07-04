@@ -93,7 +93,7 @@ export class Device {
   sync () {
     return this._model.save({
       online: this._online,
-      action: this._actions,
+      actions: this._actions,
       properties: this._properties,
       credentials: this._credentials
     })
