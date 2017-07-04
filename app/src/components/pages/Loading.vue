@@ -1,6 +1,7 @@
 <template>
   <v-app>
-    <v-dialog v-model="dialog" persistent>
+    <!-- TODO: Reenable after Vuetify > 0.12.7 (scroll issue)-->
+    <!--<v-dialog v-model="dialog" persistent>
       <v-card>
         <v-card-row>
           <v-card-text>
@@ -11,7 +12,7 @@
           </v-card-text>
         </v-card-row>
       </v-card>
-    </v-dialog>
+    </v-dialog>-->
   </v-app>
 </template>
 
