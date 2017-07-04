@@ -26,7 +26,7 @@
                 <template slot="items" scope="props">
                   <td>{{ props.item.name }}</td>
                   <td>
-                    <v-switch v-if="props.item.type === 'boolean'" v-model="props.item.value" disabled></v-switch>
+                    <v-checkbox v-if="props.item.type === 'boolean'" v-model="props.item.value" disabled />
                     <v-progress-linear v-else-if="props.item.type === 'range'" v-model="props.item.value"></v-progress-linear>
                     <v-icon v-else-if="props.item.type === 'color'" :style="{
                       color: `rgb(${props.item.value[0]}, ${props.item.value[1]}, ${props.item.value[2]})`
