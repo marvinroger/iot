@@ -9,6 +9,16 @@
             <v-card-title>{{ device.name }}</v-card-title>
           </v-card-row>
 
+          <v-card-row v-if="!device.online">
+            <v-card-text>
+              <div class="text-xs-center">
+                <v-chip class="red white--text">
+                  <v-icon left>cloud_off</v-icon>Hors ligne
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card-row>
+
           <v-card-row>
             <v-card-text>
               <img :src="`/img/devices/${device.image ? device.image : 'device'}.svg`" class="device-image" />
@@ -36,8 +46,10 @@
               </v-data-table>
             </v-card-text>
           </v-card-row>
+
           <v-divider></v-divider>
-          <v-card-row>
+
+          <v-card-row v-if="device.online">
             <v-card-text>
               <v-layout wrap justify-space-around>
                 <v-btn @click.native="handleAction(action[0], action[1])" v-for="action in Object.entries(device.actions)" :key="action[0]" flat class="red--text">{{ action[1].name }}</v-btn>

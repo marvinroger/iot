@@ -12,12 +12,14 @@ export class Yeelight {
 
   async restore (device) {
     this._discovered[device.getCredentials().id] = { yeelightInstance: null, device }
-    await device.setOnline(false)
+    device.setOnline(false)
+    await device.sync()
   }
 
   startDiscovery (discoverer) {
     const yeelightSearch = new YeelightSearch()
     yeelightSearch.on('found', async (lightBulb) => {
+      await lightBulb.turnOff()
       const id = lightBulb.getId()
       if (this._discovered[id] === undefined) {
         const device = await discoverer.discover({
@@ -33,6 +35,12 @@ export class Yeelight {
       this._discovered[id].yeelightInstance = lightBulb
 
       const device = this._discovered[id].device
+
+      lightBulb.on('notifcation', () => {
+        device.setOnline(false)
+        device.sync()
+      })
+
       device.setOnline(true)
       device.setProperties({
         on: {
