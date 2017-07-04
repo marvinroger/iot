@@ -68,7 +68,8 @@ export class WsServer {
               online: device.getOnline(),
               name: device.getName(),
               properties: device.getProperties(),
-              actions: device.getActions()
+              actions: device.getActions(),
+              image: device.getImage()
             }
           }
         }))

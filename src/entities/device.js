@@ -16,6 +16,7 @@ export class Device {
     this._properties = null
     this._credentials = null
     this._actions = null
+    this._image = null
   }
 
   _setModel (model) {
@@ -27,6 +28,7 @@ export class Device {
     this._properties = model.attributes['properties']
     this._credentials = model.attributes['credentials']
     this._actions = model.attributes['actions']
+    this._image = model.attributes['image']
   }
   _setPlugin (plugin) { this._plugin = plugin }
 
@@ -35,6 +37,7 @@ export class Device {
   getId () { return this._id }
   getType () { return this._type }
   getName () { return this._name }
+  getImage () { return this._image }
 
   getOnline () { return this._online }
   setOnline (online) {

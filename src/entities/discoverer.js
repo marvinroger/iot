@@ -12,7 +12,7 @@ export class Discoverer {
     const self = this
 
     return {
-      async discover ({ credentials, properties, name, actions }) {
+      async discover ({ credentials, properties, name, actions, image }) {
         self._logger.info(`discovered device ${name}`, properties)
 
         const model = await self._Device.forge({
@@ -21,7 +21,8 @@ export class Discoverer {
           name,
           properties,
           credentials,
-          actions
+          actions,
+          image
         }).save()
 
         return self._devicePool.forge({ model, plugin })

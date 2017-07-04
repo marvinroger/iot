@@ -11,7 +11,7 @@
 
           <v-card-row>
             <v-card-text>
-              <img src="/img/devices/lamp.svg" class="device-image" />
+              <img :src="`/img/devices/${device.image ? device.image : 'device'}.svg`" class="device-image" />
             </v-card-text>
           </v-card-row>
 

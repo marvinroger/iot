@@ -8,6 +8,7 @@ export function up (knex) {
       t.json('properties').notNullable()
       t.json('actions').notNullable()
       t.json('credentials').notNullable()
+      t.text('image')
     })
     .createTable('users', (t) => {
       t.increments('id').primary()
