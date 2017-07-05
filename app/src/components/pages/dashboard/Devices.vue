@@ -3,7 +3,7 @@
     <h4>{{ $t('dashboard.devices.title') }}</h4>
 
     <v-layout wrap>
-      <v-flex v-for="device in Object.values($store.state.devices)" :key="device.id" xs4>
+      <v-flex v-for="device in Object.values($store.state.devices)" :key="device.id" xs12 sm6 md4>
         <v-card>
           <v-card-title primary-title>{{ device.name }}</v-card-title>
 
