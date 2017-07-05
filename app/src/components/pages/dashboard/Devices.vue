@@ -6,9 +6,13 @@
       <v-flex v-for="device in Object.values($store.state.devices)" :key="device.id" xs12 sm6 md4>
         <v-card>
           <v-card-title primary-title>
-            <div>
-              <h3 class="headline mb-0">{{ device.name }}</h3>
-            </div>
+            <h3 class="headline mb-0">{{ device.name }}</h3>
+
+            <div class="spacer"></div>
+
+            <v-btn icon class="red--text">
+              <v-icon>settings</v-icon>
+            </v-btn>
           </v-card-title>
 
           <v-card-text v-if="!device.online">
