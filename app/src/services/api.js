@@ -7,6 +7,11 @@ export async function getUsers () {
   return res.data.users
 }
 
+export async function getLanguage () {
+  const res = await axios.get(`${HTTP_API_URL}/get-language`)
+  return res.data.language
+}
+
 export async function login ({ userId, password }) {
   try {
     const res = await axios.post(`${HTTP_API_URL}/login`, { userId, password }, { withCredentials: true })

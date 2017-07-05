@@ -36,10 +36,10 @@
       <v-toolbar-side-icon light @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>IoT</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn light icon :ripple="false" v-tooltip:bottom="{ html: $store.state.websocket.connected ? 'Connexion OK' : 'Pas de connexion' }">
+      <v-btn light icon :ripple="false" v-tooltip:bottom="{ html: $store.state.websocket.connected ? $t('dashboard.connection.ok') : $t('dashboard.connection.none') }">
         <v-icon>{{ $store.state.websocket.connected ? 'network_wifi' : 'wifi_off' }}</v-icon>
       </v-btn>
-      <v-btn light icon @click.native="logout" v-tooltip:bottom="{ html: 'Déconnexion' }">
+      <v-btn light icon @click.native="logout" v-tooltip:bottom="{ html: $t('dashboard.logout') }">
         <v-icon>exit_to_app</v-icon>
       </v-btn>
     </v-toolbar>
@@ -61,8 +61,8 @@
         HTTP_API_URL,
         drawer: true,
         items: [
-          { title: 'Périphériques', icon: 'dashboard', url: '/dashboard' },
-          { title: 'Paramètres', icon: 'settings', url: '/dashboard/settings', requiresRole: ['admin'] }
+          { title: this.$i18n.t('dashboard.devices.title'), icon: 'dashboard', url: '/dashboard' },
+          { title: this.$i18n.t('dashboard.settings.title'), icon: 'settings', url: '/dashboard/settings', requiresRole: ['admin'] }
         ],
         mini: false
       }

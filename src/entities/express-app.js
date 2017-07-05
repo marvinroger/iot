@@ -11,9 +11,10 @@ import cookie from 'cookie'
 import * as hash from '../helpers/hash'
 
 export class ExpressApp {
-  constructor (userModel, authTokenModel) {
+  constructor (userModel, authTokenModel, config) {
     this._User = userModel.get()
     this._AuthToken = authTokenModel.get()
+    this._config = config
 
     this._app = express()
 
@@ -33,6 +34,12 @@ export class ExpressApp {
       res.header('Access-Control-Allow-Credentials', 'true')
       res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
       next()
+    })
+
+    this._app.get('/api/get-language', async (req, res) => {
+      return res.json({
+        language: this._config.get().language
+      })
     })
 
     this._app.get('/api/users', async (req, res) => {
@@ -122,4 +129,4 @@ export class ExpressApp {
   }
 }
 
-helpers.annotate(ExpressApp, [TYPES.models.User, TYPES.models.AuthToken])
+helpers.annotate(ExpressApp, [TYPES.models.User, TYPES.models.AuthToken, TYPES.Config])

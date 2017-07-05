@@ -10,7 +10,7 @@
             <v-card-text>
               <v-select
                 v-if="users.length > 0"
-                label="Sélectionnez un utilisateur"
+                :label="$t('login.selectUser')"
                 :items="users"
                 item-value="id"
                 item-text="name"
@@ -36,7 +36,7 @@
                 </template>
               </v-select>
 
-              <p v-else>Veuillez créer un utilisateur.</p>
+              <p v-else>{{ $t('login.noUser') }}</p>
 
               <form v-if="selectedUserId !== null" @submit.prevent="handleLogin">
                 <v-text-field
@@ -44,8 +44,8 @@
                   :append-icon="showPassword ? 'visibility_off' : 'visibility'"
                   :append-icon-cb="() => (showPassword = !showPassword)"
                   :type="showPassword ? 'text' : 'password'"
-                  :errors="loginFailed ? 'Mot de passe invalide' : ''"
-                  label="Mot de passe"
+                  :errors="loginFailed ? $t('login.invalidPassword') : ''"
+                  :label="$t('login.password')"
                 />
               </form>
             </v-card-text>

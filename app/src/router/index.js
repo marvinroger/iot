@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import {store} from '../store'
+import {i18n} from '../i18n'
 
 import Loading from '../components/pages/Loading'
 import Login from '../components/pages/Login'
@@ -14,17 +15,17 @@ Vue.use(VueRouter)
 
 export const router = new VueRouter({
   routes: [
-    { path: '/loading', component: Loading, meta: { title: '🔥 Chargement', requiresAuth: false } },
+    { path: '/loading', component: Loading, meta: { title: `🔥 ${i18n.t('loading.title')}`, requiresAuth: false } },
     {
       path: '/dashboard',
       component: Dashboard,
-      meta: { title: '🏠 Panneau de contrôle', requiresAuth: true },
+      meta: { title: `🏠 ${i18n.t('dashboard.title')}`, requiresAuth: true },
       children: [
-        { path: '/', component: DashboardDevices, meta: { title: 'Périphériques' } },
-        { path: 'settings', component: DashboardSettings, meta: { title: 'Paramètres', requiresRole: ['admin'] } }
+        { path: '/', component: DashboardDevices, meta: { title: i18n.t('dashboard.devices.title') } },
+        { path: 'settings', component: DashboardSettings, meta: { title: i18n.t('dashboard.settings.title'), requiresRole: ['admin'] } }
       ]
     },
-    { path: '/login', component: Login, meta: { title: '🔑 Connexion', requiresAuth: false } },
+    { path: '/login', component: Login, meta: { title: `🔑 ${i18n.t('login.title')}`, requiresAuth: false } },
     { path: '*', redirect: '/dashboard' }
   ]
 })

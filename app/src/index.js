@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 import {store} from './store'
 import {router} from './router'
+import {i18n} from './i18n'
 import VuexRouterSync from 'vuex-router-sync'
 
 import './plugins'
@@ -14,5 +15,6 @@ export const vue = new Vue({
   el: '#app',
   render: h => h(App),
   router,
-  store
+  store,
+  i18n
 })

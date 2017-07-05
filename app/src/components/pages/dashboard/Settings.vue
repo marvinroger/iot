@@ -1,5 +1,5 @@
 <template>
-  <div>Paramètres</div>
+  <div>{{ $t('dashboard.settings.title') }}</div>
 </template>
 
 <script>

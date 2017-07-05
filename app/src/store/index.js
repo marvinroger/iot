@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import {i18n} from '../i18n'
 import {WebSocket} from '../lib/websocket'
 import {WS_API_URL} from '../constants'
 import {parseMessage, MESSAGE_TYPES} from '../../../common/ws-messages'
@@ -12,6 +13,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     loading: true,
+    language: null,
     loggedIn: false,
     user: {
       id: null,
@@ -27,6 +29,9 @@ export const store = new Vuex.Store({
   mutations: {
     setLoading (state, loading) {
       state.loading = loading
+    },
+    setLanguage (state, language) {
+      state.language = language
     },
     setLoggedIn (state, loggedIn) {
       state.loggedIn = loggedIn
@@ -76,6 +81,10 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
+    setLanguage ({ commit }, language) {
+      commit('setLanguage', language)
+      i18n.locale = language
+    },
     connectToWebsocket ({ state, commit }) {
       if (!state.websocket.instance) {
         const ws = new WebSocket(WS_API_URL)

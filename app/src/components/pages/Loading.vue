@@ -7,7 +7,7 @@
           <v-card-text>
             <p class="text-xs-center">
               <v-progress-circular indeterminate :size="50" class="primary--text"></v-progress-circular><br>
-              Veuillez patienter...
+              {{ $t('loading.pleaseWait') }}
             </p>
           </v-card-text>
         </v-card-row>
@@ -26,6 +26,9 @@
       }
     },
     async created () {
+      const language = await api.getLanguage()
+      this.$store.dispatch('setLanguage', language)
+
       const res = await api.isLoggedIn()
       this.$store.commit('setLoggedIn', res.loggedIn)
       if (res.loggedIn) {
@@ -33,6 +36,7 @@
         this.$store.commit('setUserName', res.user.name)
         this.$store.commit('setUserRole', res.user.role)
       }
+
       this.$store.commit('setLoading', false)
       this.dialog = false
 
@@ -40,10 +44,11 @@
       TODO: remove the underlying code when Vuetify 0.12.7+ is released
       */
 
-      const overlays = document.getElementsByClassName('overlay')
+      /* const overlays = document.getElementsByClassName('overlay')
       while (overlays.length > 0) {
         overlays[0].parentNode.removeChild(overlays[0])
       }
+      */
 
       this.$router.replace(this.$route.query.redirect)
     },

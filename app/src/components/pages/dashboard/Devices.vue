@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h4>Périphériques</h4>
+    <h4>{{ $t('dashboard.devices.title') }}</h4>
 
     <v-layout wrap>
       <v-flex v-for="device in Object.values($store.state.devices)" :key="device.id" xs4>
@@ -13,7 +13,7 @@
             <v-card-text>
               <div class="text-xs-center">
                 <v-chip class="red white--text">
-                  <v-icon left>cloud_off</v-icon>Hors ligne
+                  <v-icon left>cloud_off</v-icon>{{ $t('dashboard.devices.offline') }}
                 </v-chip>
               </div>
             </v-card-text>
@@ -28,7 +28,7 @@
           <v-card-row>
             <v-card-text>
               <v-data-table
-                :headers="[{ text: 'Propriété', sortable: false, left: true }, { text: 'Valeur', sortable: false, left: true }]"
+                :headers="[{ text: $t('dashboard.devices.property'), sortable: false, left: true }, { text: $t('dashboard.devices.value'), sortable: false, left: true }]"
                 :items="Object.values(device.properties)"
                 hide-actions
                 class="elevation-1"
@@ -73,8 +73,8 @@
           </v-card-text>
         </v-card-row>
         <v-card-row actions>
-          <v-btn class="red--text" flat @click.native="action.paramsDialog = false">Annuler</v-btn>
-          <v-btn class="red--text" flat @click.native="action.paramsDialog = false">OK</v-btn>
+          <v-btn class="red--text" flat @click.native="action.paramsDialog = false">{{ $t('generic.cancel') }}</v-btn>
+          <v-btn class="red--text" flat @click.native="action.paramsDialog = false">{{ $t('generic.ok') }}</v-btn>
         </v-card-row>
       </v-card>
     </v-dialog>
