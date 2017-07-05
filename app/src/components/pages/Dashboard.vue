@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer persistent light :mini-variant.sync="mini" v-model="drawer">
+    <v-navigation-drawer persistent clipped :mini-variant.sync="mini" v-model="drawer">
       <v-list class="pa-0">
         <v-list-tile avatar tag="div">
           <v-list-tile-avatar>
@@ -44,16 +44,21 @@
         <router-view></router-view>
       </v-container>
     </main>
+    <v-footer class="pa-3">
+      <v-spacer></v-spacer>
+      <div>App <code>v{{ VERSION }}</code> – Server <code>v{{ $store.state.serverVersion }}</code></div>
+    </v-footer>
   </v-app>
 </template>
 
 <script>
-  import {HTTP_API_URL} from '../../constants'
+  import {VERSION, HTTP_API_URL} from '../../constants'
   import * as api from '../../services/api'
 
   export default {
     data () {
       return {
+        VERSION,
         HTTP_API_URL,
         drawer: true,
         items: [

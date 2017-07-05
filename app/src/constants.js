@@ -1,3 +1,7 @@
+import {version} from '../package.json'
+
+export const VERSION = version
+
 function getUrl (ws) {
   const l = window.location
   return ((l.protocol === 'https:') ? (ws ? 'wss://' : 'https://') : (ws ? 'ws://' : 'http://')) + l.host + l.pathname

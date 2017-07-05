@@ -5,7 +5,11 @@
     <v-layout wrap>
       <v-flex v-for="device in Object.values($store.state.devices)" :key="device.id" xs12 sm6 md4>
         <v-card>
-          <v-card-title primary-title>{{ device.name }}</v-card-title>
+          <v-card-title primary-title>
+            <div>
+              <h3 class="headline mb-0">{{ device.name }}</h3>
+            </div>
+          </v-card-title>
 
           <v-card-text v-if="!device.online">
             <div class="text-xs-center">
@@ -15,9 +19,12 @@
             </div>
           </v-card-text>
 
-          <v-card-text>
-            <img :src="`/img/devices/${device.image ? device.image : 'device'}.svg`" class="device-image" />
-          </v-card-text>
+          <v-card-media
+            :src="`/img/devices/${device.image ? device.image : 'device'}.svg`"
+            height="150px"
+            contain
+          >
+        </v-card-media>
 
           <v-card-text>
             <v-data-table
@@ -95,12 +102,3 @@
     }
   }
 </script>
-
-<style scoped>
-  .device-image {
-    display: block;
-    margin: 0 auto;
-
-    height: 100px;
-  }
-</style>

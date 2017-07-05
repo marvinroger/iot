@@ -7,9 +7,9 @@ export async function getUsers () {
   return res.data.users
 }
 
-export async function getLanguage () {
-  const res = await axios.get(`${HTTP_API_URL}/get-language`)
-  return res.data.language
+export async function getHandshake () {
+  const res = await axios.get(`${HTTP_API_URL}/handshake`, { withCredentials: true })
+  return res.data
 }
 
 export async function login ({ userId, password }) {
@@ -20,11 +20,6 @@ export async function login ({ userId, password }) {
     if (err.response) return false
     else throw err
   }
-}
-
-export async function isLoggedIn () {
-  const res = await axios.get(`${HTTP_API_URL}/logged-in`, { withCredentials: true })
-  return res.data
 }
 
 export async function logout () {

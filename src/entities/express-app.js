@@ -8,6 +8,7 @@ import bodyParser from 'body-parser'
 import uuid from 'uuid'
 import cookie from 'cookie'
 
+import {version} from '../../package.json'
 import * as hash from '../helpers/hash'
 
 export class ExpressApp {
@@ -34,12 +35,6 @@ export class ExpressApp {
       res.header('Access-Control-Allow-Credentials', 'true')
       res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
       next()
-    })
-
-    this._app.get('/api/get-language', async (req, res) => {
-      return res.json({
-        language: this._config.get().language
-      })
     })
 
     this._app.get('/api/users', async (req, res) => {
@@ -107,23 +102,27 @@ export class ExpressApp {
       res.clearCookie('ACCESSTOKEN').sendStatus(204)
     })
 
-    this._app.get('/api/logged-in', async (req, res) => {
+    this._app.get('/api/handshake', async (req, res) => {
+      const object = {
+        language: this._config.get().language,
+        version
+      }
+
       const tokenModel = await getTokenModelIfLoggedIn(req.headers.cookie)
+
       if (!tokenModel) {
-        return res.json({
-          loggedIn: false
-        })
+        object.loggedIn = false
+        return res.json(object)
       } else {
         const userModel = tokenModel.related('user')
 
-        return res.json({
-          loggedIn: true,
-          user: {
-            id: userModel.id,
-            name: userModel.attributes['name'],
-            role: userModel.attributes['role']
-          }
-        })
+        object.loggedIn = true
+        object.user = {
+          id: userModel.id,
+          name: userModel.attributes['name'],
+          role: userModel.attributes['role']
+        }
+        return res.json(object)
       }
     })
   }

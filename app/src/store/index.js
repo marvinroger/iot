@@ -13,6 +13,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     loading: true,
+    serverVersion: null,
     language: null,
     loggedIn: false,
     user: {
@@ -32,6 +33,9 @@ export const store = new Vuex.Store({
     },
     setLanguage (state, language) {
       state.language = language
+    },
+    setServerVersion (state, version) {
+      state.serverVersion = version
     },
     setLoggedIn (state, loggedIn) {
       state.loggedIn = loggedIn

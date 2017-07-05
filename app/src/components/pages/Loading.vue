@@ -23,15 +23,15 @@
       }
     },
     async created () {
-      const language = await api.getLanguage()
-      this.$store.dispatch('setLanguage', language)
+      const handshake = await api.getHandshake()
+      this.$store.dispatch('setLanguage', handshake.language)
 
-      const res = await api.isLoggedIn()
-      this.$store.commit('setLoggedIn', res.loggedIn)
-      if (res.loggedIn) {
-        this.$store.commit('setUserId', res.user.id)
-        this.$store.commit('setUserName', res.user.name)
-        this.$store.commit('setUserRole', res.user.role)
+      this.$store.commit('setServerVersion', handshake.version)
+      this.$store.commit('setLoggedIn', handshake.loggedIn)
+      if (handshake.loggedIn) {
+        this.$store.commit('setUserId', handshake.user.id)
+        this.$store.commit('setUserName', handshake.user.name)
+        this.$store.commit('setUserRole', handshake.user.role)
       }
 
       this.$store.commit('setLoading', false)
