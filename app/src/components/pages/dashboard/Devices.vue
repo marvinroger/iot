@@ -5,77 +5,65 @@
     <v-layout wrap>
       <v-flex v-for="device in Object.values($store.state.devices)" :key="device.id" xs4>
         <v-card>
-          <v-card-row class="red accent-1">
-            <v-card-title>{{ device.name }}</v-card-title>
-          </v-card-row>
+          <v-card-title primary-title>{{ device.name }}</v-card-title>
 
-          <v-card-row v-if="!device.online">
-            <v-card-text>
-              <div class="text-xs-center">
-                <v-chip class="red white--text">
-                  <v-icon left>cloud_off</v-icon>{{ $t('dashboard.devices.offline') }}
-                </v-chip>
-              </div>
-            </v-card-text>
-          </v-card-row>
+          <v-card-text v-if="!device.online">
+            <div class="text-xs-center">
+              <v-chip class="red white--text">
+                <v-icon left>cloud_off</v-icon>{{ $t('dashboard.devices.offline') }}
+              </v-chip>
+            </div>
+          </v-card-text>
 
-          <v-card-row>
-            <v-card-text>
-              <img :src="`/img/devices/${device.image ? device.image : 'device'}.svg`" class="device-image" />
-            </v-card-text>
-          </v-card-row>
+          <v-card-text>
+            <img :src="`/img/devices/${device.image ? device.image : 'device'}.svg`" class="device-image" />
+          </v-card-text>
 
-          <v-card-row>
-            <v-card-text>
-              <v-data-table
-                :headers="[{ text: $t('dashboard.devices.property'), sortable: false, left: true }, { text: $t('dashboard.devices.value'), sortable: false, left: true }]"
-                :items="Object.values(device.properties)"
-                hide-actions
-                class="elevation-1"
-              >
-                <template slot="items" scope="props">
-                  <td>{{ props.item.name }}</td>
-                  <td>
-                    <v-checkbox v-if="props.item.type === 'boolean'" v-model="props.item.value" disabled />
-                    <v-progress-linear v-else-if="props.item.type === 'range'" v-model="props.item.value"></v-progress-linear>
-                    <v-icon v-else-if="props.item.type === 'color'" :style="{
-                      color: `rgb(${props.item.value[0]}, ${props.item.value[1]}, ${props.item.value[2]})`
-                    }">color_lens</v-icon>
-                  </td>
-                </template>
-              </v-data-table>
-            </v-card-text>
-          </v-card-row>
+          <v-card-text>
+            <v-data-table
+              :headers="[{ text: $t('dashboard.devices.property'), sortable: false, left: true }, { text: $t('dashboard.devices.value'), sortable: false, left: true }]"
+              :items="Object.values(device.properties)"
+              hide-actions
+              class="elevation-1"
+            >
+              <template slot="items" scope="props">
+                <td>{{ props.item.name }}</td>
+                <td>
+                  <v-checkbox v-if="props.item.type === 'boolean'" v-model="props.item.value" disabled />
+                  <v-progress-linear v-else-if="props.item.type === 'range'" v-model="props.item.value"></v-progress-linear>
+                  <v-icon v-else-if="props.item.type === 'color'" :style="{
+                    color: `rgb(${props.item.value[0]}, ${props.item.value[1]}, ${props.item.value[2]})`
+                  }">color_lens</v-icon>
+                </td>
+              </template>
+            </v-data-table>
+          </v-card-text>
 
           <v-divider></v-divider>
 
-          <v-card-row v-if="device.online">
-            <v-card-text>
-              <v-layout wrap justify-space-around>
-                <v-btn @click.native="handleAction(action[0], action[1])" v-for="action in Object.entries(device.actions)" :key="action[0]" flat class="red--text">{{ action[1].name }}</v-btn>
-              </v-layout>
-            </v-card-text>
-          </v-card-row>
+          <v-card-text v-if="device.online">
+            <v-layout wrap justify-space-around>
+              <v-btn @click.native="handleAction(action[0], action[1])" v-for="action in Object.entries(device.actions)" :key="action[0]" flat class="red--text">{{ action[1].name }}</v-btn>
+            </v-layout>
+          </v-card-text>
         </v-card>
       </v-flex>
     </v-layout>
 
     <v-dialog v-model="action.paramsDialog" persistent>
       <v-card>
-        <v-card-row>
-          <v-card-title>{{ action.action.name }}</v-card-title>
-        </v-card-row>
-        <v-card-row>
-          <v-card-text>
-            <div v-for="(parameter, index) in action.action.accepts" :key="index">
-              <v-slider v-if="parameter.type === 'range'" :min="parameter.range[0]" :max="parameter.range[1]" thumb-label v-model="action.givenParams[index]"></v-slider>
-            </div>
-          </v-card-text>
-        </v-card-row>
-        <v-card-row actions>
+        <v-card-title>{{ action.action.name }}</v-card-title>
+
+        <v-card-text>
+          <div v-for="(parameter, index) in action.action.accepts" :key="index">
+            <v-slider v-if="parameter.type === 'range'" :min="parameter.range[0]" :max="parameter.range[1]" thumb-label v-model="action.givenParams[index]"></v-slider>
+          </div>
+        </v-card-text>
+
+        <v-card-actions>
           <v-btn class="red--text" flat @click.native="action.paramsDialog = false">{{ $t('generic.cancel') }}</v-btn>
           <v-btn class="red--text" flat @click.native="action.paramsDialog = false">{{ $t('generic.ok') }}</v-btn>
-        </v-card-row>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </div>

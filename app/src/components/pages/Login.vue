@@ -15,7 +15,7 @@
                 item-value="id"
                 item-text="name"
                 v-model="selectedUserId"
-                dark
+                chips
                 autocomplete
               >
                 <template slot="selection" scope="data">
@@ -44,7 +44,7 @@
                   :append-icon="showPassword ? 'visibility_off' : 'visibility'"
                   :append-icon-cb="() => (showPassword = !showPassword)"
                   :type="showPassword ? 'text' : 'password'"
-                  :errors="loginFailed ? $t('login.invalidPassword') : ''"
+                  :error-messages="loginFailed ? [$t('login.invalidPassword')] : []"
                   :label="$t('login.password')"
                 />
               </form>
