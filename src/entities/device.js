@@ -2,10 +2,12 @@ import {helpers} from 'inversify-vanillajs-helpers'
 import {TYPES} from '../types'
 
 import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
+import {schema as propertiesSchema} from '../schemas/device/properties'
 
 export class Device {
-  constructor (updateBus) {
+  constructor (updateBus, logger) {
     this._updateBus = updateBus
+    this._logger = logger.get('device')
 
     this._model = null
     this._plugin = null
@@ -47,6 +49,8 @@ export class Device {
 
   getProperties () { return this._properties }
   setProperties (properties) {
+    const {err} = propertiesSchema.validate(properties)
+    if (err) return this._logger.error(err)
     Object.assign(this._properties, properties)
     this._updateBus.notify(DEVICE_UPDATE_TYPES.PROPERTIES_SET, this._id, properties)
   }
@@ -100,4 +104,4 @@ export class Device {
   }
 }
 
-helpers.annotate(Device, [TYPES.UpdateBus])
+helpers.annotate(Device, [TYPES.UpdateBus, TYPES.Logger])

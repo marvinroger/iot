@@ -5,7 +5,7 @@ export class App {
   constructor (
     logger, config, knex, httpServer, expressApp, wsServer, discoverer, devicePool,
     deviceModel,
-    aqaraPlugin, yeelightPlugin
+    aqaraPlugin, yeelightPlugin, dummyPlugin
   ) {
     this._logger = logger.get('app')
     this._config = config.get()
@@ -22,6 +22,10 @@ export class App {
       aqaraPlugin,
       yeelightPlugin
     ]
+
+    if (process.env.NODE_ENV === 'development') {
+      this._plugins.push(dummyPlugin)
+    }
   }
 
   async start () {
@@ -73,5 +77,5 @@ export class App {
 helpers.annotate(App, [
   TYPES.Logger, TYPES.Config, TYPES.Knex, TYPES.HttpServer, TYPES.ExpressApp, TYPES.WsServer, TYPES.Discoverer, TYPES.DevicePool,
   TYPES.models.Device,
-  TYPES.plugins.Aqara, TYPES.plugins.Yeelight
+  TYPES.plugins.Aqara, TYPES.plugins.Yeelight, TYPES.plugins.Dummy
 ])

@@ -10,8 +10,8 @@
     "start": "node lib/bin/cli.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --out-dir lib",
-    "dev": "babel-watch src/bin/cli.js -- start",
-    "dev-all": "concurrently --names \"server,client\" --prefix-colors \"magenta,green\" \"npm run dev\" \"cd app && npm run dev\"",
+    "dev": "cross-env NODE_ENV=development babel-watch src/bin/cli.js -- start",
+    "dev-all": "concurrently --names \"server,client\" --prefix-colors \"magenta,green\" \"npm run dev\" \"cd app && cross-env NODE_ENV=development npm run dev\"",
     "install-all": "npm install && cd app && npm install"
   },
   "engines": {
@@ -28,6 +28,7 @@
     "express": "^4.15.3",
     "inversify": "^4.1.1",
     "inversify-vanillajs-helpers": "^2.0.0",
+    "joi": "^10.6.0",
     "knex": "^0.13.0",
     "minilog": "^3.1.0",
     "reflect-metadata": "^0.1.10",
@@ -41,6 +42,7 @@
     "babel-cli": "^6.24.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
     "babel-watch": "^2.0.6",
-    "concurrently": "^3.5.0"
+    "concurrently": "^3.5.0",
+    "cross-env": "^5.0.1"
   }
 }

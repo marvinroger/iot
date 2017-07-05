@@ -19,6 +19,7 @@ import {Device as DeviceModel} from './entities/models/device'
 import {User as UserModel} from './entities/models/user'
 import {AuthToken as AuthTokenModel} from './entities/models/auth-token'
 
+import {Dummy} from './entities/plugins/dummy'
 import {Yeelight} from './entities/plugins/yeelight'
 import {Aqara} from './entities/plugins/aqara'
 
@@ -42,5 +43,6 @@ container.bind(TYPES.models.Device).to(DeviceModel).inSingletonScope()
 container.bind(TYPES.models.User).to(UserModel).inSingletonScope()
 container.bind(TYPES.models.AuthToken).to(AuthTokenModel).inSingletonScope()
 
+container.bind(TYPES.plugins.Dummy).to(Dummy).inSingletonScope()
 container.bind(TYPES.plugins.Yeelight).to(Yeelight).inSingletonScope()
 container.bind(TYPES.plugins.Aqara).to(Aqara).inSingletonScope()

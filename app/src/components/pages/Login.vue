@@ -9,6 +9,7 @@
           <v-card class="elevation-4">
             <v-card-text>
               <v-select
+                v-if="users.length > 0"
                 label="Sélectionnez un utilisateur"
                 :items="users"
                 item-value="id"
@@ -34,6 +35,8 @@
                   </v-list-tile-content>
                 </template>
               </v-select>
+
+              <p v-else>Veuillez créer un utilisateur.</p>
 
               <form v-if="selectedUserId !== null" @submit.prevent="handleLogin">
                 <v-text-field

@@ -21,6 +21,7 @@ export const TYPES = {
   },
   plugins: {
     Yeelight: Symbol('Plugin<Yeelight>'),
-    Aqara: Symbol('Plugin<Aqara>')
+    Aqara: Symbol('Plugin<Aqara>'),
+    Dummy: Symbol('Plugin<Dummy>')
   }
 }
