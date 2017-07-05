@@ -8,6 +8,10 @@ export class Dummy {
     this._discovered = {}
   }
 
+  init ({ language }) {
+    this._language = language
+  }
+
   async restore (device) {
     this._discovered[device.getCredentials().id] = { device }
     device.setOnline(false)

@@ -6,6 +6,10 @@ export class Aqara {
     this.type = 'aqara'
   }
 
+  init ({ language }) {
+    this._language = language
+  }
+
   restore (device) {
 
   }

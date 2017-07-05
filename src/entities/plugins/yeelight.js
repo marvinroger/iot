@@ -10,6 +10,10 @@ export class Yeelight {
     this._discovered = {}
   }
 
+  init ({ language }) {
+    this._language = language
+  }
+
   async restore (device) {
     this._discovered[device.getCredentials().id] = { yeelightInstance: null, device }
     device.setOnline(false)

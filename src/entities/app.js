@@ -58,6 +58,12 @@ export class App {
 
     const devices = await this._Device.fetchAll()
 
+    for (const plugin of this._plugins) {
+      plugin.init({
+        language: this._config.language
+      })
+    }
+
     for (const deviceModel of devices.models) {
       for (const plugin of this._plugins) {
         if (deviceModel.attributes['type'] === plugin.type) {
