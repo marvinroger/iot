@@ -1,6 +1,8 @@
 import {helpers} from 'inversify-vanillajs-helpers'
 import {TYPES} from '../types'
 
+import {schema as discoverSchema} from '../schemas/device/discover'
+
 export class Discoverer {
   constructor (deviceModel, devicePool, logger) {
     this._Device = deviceModel.get()
@@ -12,7 +14,12 @@ export class Discoverer {
     const self = this
 
     return {
-      async discover ({ credentials, properties, name, actions, image }) {
+      async discover (opts) {
+        const {error} = discoverSchema.validate(opts)
+        if (error) return this._logger.error(error)
+
+        const { credentials, properties, name, actions, image } = opts
+
         self._logger.info(`discovered device ${name}`, properties)
 
         const model = await self._Device.forge({
