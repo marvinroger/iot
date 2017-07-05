@@ -3,6 +3,7 @@ import {TYPES} from '../types'
 
 import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
 import {schema as propertiesSchema} from '../schemas/device/properties'
+import {schema as actionsSchema} from '../schemas/device/actions'
 
 export class Device {
   constructor (updateBus, logger) {
@@ -49,8 +50,8 @@ export class Device {
 
   getProperties () { return this._properties }
   setProperties (properties) {
-    const {err} = propertiesSchema.validate(properties)
-    if (err) return this._logger.error(err)
+    const {error} = propertiesSchema.validate(properties)
+    if (error) return this._logger.error(error)
     Object.assign(this._properties, properties)
     this._updateBus.notify(DEVICE_UPDATE_TYPES.PROPERTIES_SET, this._id, properties)
   }
@@ -80,6 +81,8 @@ export class Device {
 
   getActions () { return this._actions }
   setActions (actions) {
+    const {error} = actionsSchema.validate(actions)
+    if (error) return this._logger.error(error)
     Object.assign(this._actions, actions)
     this._updateBus.notify(DEVICE_UPDATE_TYPES.ACTIONS_SET, this._id, actions)
   }
