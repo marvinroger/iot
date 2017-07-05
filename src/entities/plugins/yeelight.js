@@ -8,6 +8,7 @@ export class Yeelight {
     this.type = 'yeelight'
 
     this._discovered = {}
+    this._mapping = {}
   }
 
   init ({ language }) {
@@ -16,6 +17,7 @@ export class Yeelight {
 
   async restore (device) {
     this._discovered[device.getCredentials().id] = { yeelightInstance: null, device }
+    this._mapping[device.getId()] = device.getCredentials().id
     device.setOnline(false)
     await device.sync()
   }
@@ -23,7 +25,6 @@ export class Yeelight {
   startDiscovery (discoverer) {
     const yeelightSearch = new YeelightSearch()
     yeelightSearch.on('found', async (lightBulb) => {
-      await lightBulb.turnOff()
       const id = lightBulb.getId()
       if (this._discovered[id] === undefined) {
         const device = await discoverer.discover({
@@ -85,8 +86,21 @@ export class Yeelight {
     })
   }
 
-  async handleAction (action) {
+  _convertRgbToHex (r, g, b) {
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+  }
 
+  async handleAction (action) {
+    const localId = this._mapping[action.deviceId]
+    const discovered = this._discovered[localId]
+    if (!discovered || !discovered.yeelightInstance) return
+
+    const lightBulb = discovered.yeelightInstance
+
+    if (action.action === 'setColor') {
+      const rgb = action.params[0]
+      lightBulb.setRGB(this._convertRgbToHex(rgb[0], rgb[1], rgb[2]))
+    }
   }
 }
 

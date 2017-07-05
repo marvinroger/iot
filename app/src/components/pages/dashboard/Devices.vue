@@ -50,7 +50,7 @@
 
           <v-card-text v-if="device.online">
             <v-layout wrap justify-space-around>
-              <v-btn @click.native="handleAction(action[0], action[1])" v-for="action in Object.entries(device.actions)" :key="action[0]" flat class="red--text">{{ action[1].name }}</v-btn>
+              <v-btn @click.native="handleAction(device.id, action[0], action[1])" v-for="action in Object.entries(device.actions)" :key="action[0]" flat class="red--text">{{ action[1].name }}</v-btn>
             </v-layout>
           </v-card-text>
         </v-card>
@@ -64,12 +64,13 @@
         <v-card-text>
           <div v-for="(parameter, index) in action.action.accepts" :key="index">
             <v-slider v-if="parameter.type === 'range'" :min="parameter.range[0]" :max="parameter.range[1]" thumb-label v-model="action.givenParams[index]"></v-slider>
+            <chrome-picker v-else-if="parameter.type === 'color'" v-model="action.givenParams[index]"></chrome-picker>
           </div>
         </v-card-text>
 
         <v-card-actions>
           <v-btn class="red--text" flat @click.native="action.paramsDialog = false">{{ $t('generic.cancel') }}</v-btn>
-          <v-btn class="red--text" flat @click.native="action.paramsDialog = false">{{ $t('generic.ok') }}</v-btn>
+          <v-btn class="red--text" flat @click.native="handleActionSending">{{ $t('generic.ok') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -77,27 +78,56 @@
 </template>
 
 <script>
+  import Vue from 'vue'
+  import {Chrome as ChromePicker} from 'vue-color'
+
   export default {
     data () {
       return {
         action: {
           paramsDialog: false,
+          deviceId: null,
           id: null,
           action: {},
           givenParams: {}
         }
       }
     },
+    components: { ChromePicker },
     methods: {
-      handleAction (id, action) {
+      handleAction (deviceId, id, action) {
+        this.action.deviceId = deviceId
         this.action.id = id
         this.action.action = action
         this.action.paramsDialog = true
 
+        this.action.givenParams = {}
         for (const paramIndex in this.action.action.accepts) {
-          this.action.givenParams[paramIndex] = 0
-          this.action.givenParams = JSON.parse(JSON.stringify(this.action.givenParams))
+          const param = this.action.action.accepts[paramIndex]
+          if (param.type === 'range') {
+            Vue.set(this.action.givenParams, paramIndex, param.range[0])
+          } else if (param.type === 'color') {
+            Vue.set(this.action.givenParams, paramIndex, { hex: '#FFE975', rgba: { r: 255, g: 233, b: 117, a: 1 } })
+          }
         }
+      },
+      handleActionSending () {
+        const formattedParams = []
+        for (const paramIndex in this.action.action.accepts) {
+          const param = this.action.action.accepts[paramIndex]
+          const givenParam = this.action.givenParams[paramIndex]
+          let formatted
+          if (param.type === 'range') {
+            formatted = givenParam
+          } else if (param.type === 'color') {
+            formatted = [givenParam.rgba.r, givenParam.rgba.g, givenParam.rgba.b]
+          }
+
+          formattedParams.push(formatted)
+        }
+
+        this.$store.dispatch('triggerAction', { action: this.action.id, deviceId: this.action.deviceId, params: formattedParams })
+        this.action.paramsDialog = false
       }
     }
   }

@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import {i18n} from '../i18n'
 import {WebSocket} from '../lib/websocket'
+import {makeWsRequest} from '../helpers/ws-request'
 import {WS_API_URL} from '../constants'
 import {parseMessage, MESSAGE_TYPES} from '../../../common/ws-messages'
 import {EVENT_TYPES} from '../../../common/event-types'
@@ -111,6 +112,17 @@ export const store = new Vuex.Store({
       if (!state.websocket.instance) return
       state.websocket.instance.stop()
       state.websocket.instance = null
+    },
+    async triggerAction ({ state, commit }, { action, deviceId, params }) {
+      await makeWsRequest({
+        ws: state.websocket.instance,
+        method: 'triggerAction',
+        parameters: {
+          action,
+          deviceId,
+          params
+        }
+      })
     }
   }
 })

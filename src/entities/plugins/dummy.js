@@ -74,7 +74,6 @@ export class Dummy {
   }
 
   async handleAction (action) {
-
   }
 }
 

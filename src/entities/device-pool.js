@@ -12,7 +12,7 @@ export class DevicePool {
     device._setModel(model)
     device._setPlugin(plugin)
 
-    this._devices.set(device.id, device)
+    this._devices.set(device.getId(), device)
 
     return device
   }

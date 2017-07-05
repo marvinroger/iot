@@ -51,8 +51,29 @@ export class WsServer {
         this._clients.delete(clientObject)
       })
 
+      const sendResponse = (request, value) => {
+        ws.send(generateMessage({ type: MESSAGE_TYPES.RESPONSE, id: request.id, value }))
+      }
+
       ws.on('message', (data) => {
-        parseMessage(data)
+        const message = parseMessage(data)
+
+        if (message.type !== MESSAGE_TYPES.REQUEST) return
+
+        if (message.method === 'triggerAction') {
+          const {action, deviceId, params} = message.parameters
+
+          const device = this._devicePool.getDevice(deviceId)
+          if (!device) return sendResponse(message, false)
+
+          device.getPlugin().handleAction({
+            deviceId,
+            action,
+            params
+          })
+
+          sendResponse(message, true)
+        }
       })
 
       // sending initial messages
@@ -65,6 +86,7 @@ export class WsServer {
             type: DEVICE_UPDATE_TYPES.DEVICE_ADDED,
             id: device.getId(),
             value: {
+              id: device.getId(),
               online: device.getOnline(),
               name: device.getName(),
               properties: device.getProperties(),
