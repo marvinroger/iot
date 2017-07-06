@@ -1,6 +1,6 @@
 import {helpers} from 'inversify-vanillajs-helpers'
 
-import YeelightSearch from 'yeelight-wifi'
+import {Lookup as YeelightLookup} from 'node-yeelight-wifi'
 
 export class Yeelight {
   constructor () {
@@ -23,9 +23,9 @@ export class Yeelight {
   }
 
   startDiscovery (discoverer) {
-    const yeelightSearch = new YeelightSearch()
-    yeelightSearch.on('found', async (lightBulb) => {
-      const id = lightBulb.getId()
+    const yeelightLookup = new YeelightLookup()
+    yeelightLookup.on('detected', async (lightBulb) => {
+      const id = lightBulb.id
       if (this._discovered[id] === undefined) {
         const device = await discoverer.discover({
           name: 'Yeelight',
@@ -41,9 +41,20 @@ export class Yeelight {
 
       const device = this._discovered[id].device
 
-      lightBulb.on('notifcation', () => {
+      let reconnectInterval = null
+      lightBulb.on('disconnected', async () => {
         device.setOnline(false)
-        device.sync()
+        await device.sync()
+
+        reconnectInterval = setInterval(() => {
+          lightBulb.connect()
+        }, 10000)
+      })
+
+      lightBulb.on('connected', async () => {
+        clearInterval(reconnectInterval)
+        device.setOnline(true)
+        await device.sync()
       })
 
       device.setOnline(true)
@@ -86,10 +97,6 @@ export class Yeelight {
     })
   }
 
-  _convertRgbToHex (r, g, b) {
-    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
-  }
-
   async handleAction (action) {
     const localId = this._mapping[action.deviceId]
     const discovered = this._discovered[localId]
@@ -99,7 +106,7 @@ export class Yeelight {
 
     if (action.action === 'setColor') {
       const rgb = action.params[0]
-      lightBulb.setRGB(this._convertRgbToHex(rgb[0], rgb[1], rgb[2]))
+      await lightBulb.setRGB(rgb)
     }
   }
 }
