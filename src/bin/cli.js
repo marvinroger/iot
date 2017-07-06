@@ -4,10 +4,11 @@ import yargs from 'yargs'
 
 import {promisify} from 'util'
 import fs from 'fs'
-const readFile = promisify(fs.readFile)
 
 import {bootstrap} from '../index'
 import * as hash from '../helpers/hash'
+
+const readFile = promisify(fs.readFile)
 
 export const argv = yargs
   .command('start', 'start IoT', (yargs) => {

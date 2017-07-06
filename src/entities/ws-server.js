@@ -17,12 +17,14 @@ export class WsServer {
     this._wsServer = new WebSocket.Server({
       server: httpServer.get(),
       async verifyClient (info, cb) {
+        // eslint-disable-next-line standard/no-callback-literal
         const fail = () => cb(false, 401, 'Unauthorized')
         const cookies = info.req.headers.cookie ? cookie.parse(info.req.headers.cookie) : null
         if (!cookies || !cookies['ACCESSTOKEN']) return fail()
         const tokenModel = await AuthToken.where({ token: cookies['ACCESSTOKEN'] }).fetch({ withRelated: ['user'] })
         if (tokenModel && !tokenModel.attributes['revoked']) {
           info.req.user = tokenModel.related('user')
+          // eslint-disable-next-line standard/no-callback-literal
           return cb(true)
         } else return fail()
       }

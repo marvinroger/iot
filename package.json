@@ -10,6 +10,7 @@
     "start": "node lib/bin/cli.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --out-dir lib",
+    "lint": "standard \"src/**/*.js\"",
     "dev": "cross-env NODE_ENV=development babel-watch src/bin/cli.js -- start",
     "dev-all": "concurrently --names \"server,client\" --prefix-colors \"magenta,green\" \"npm run dev\" \"cd app && cross-env NODE_ENV=development npm run dev\"",
     "install-all": "npm install && cd app && npm install"
@@ -43,6 +44,7 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
     "babel-watch": "^2.0.6",
     "concurrently": "^3.5.0",
-    "cross-env": "^5.0.1"
+    "cross-env": "^5.0.1",
+    "standard": "^10.0.2"
   }
 }
