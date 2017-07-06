@@ -70,6 +70,10 @@ export class Dummy {
         }
       })
       await device.sync()
+
+      setInterval(() => {
+        device.setProperties({ on: { value: !device.getProperties().on.value } })
+      }, 1 * 1000)
     }, 1 * 1000)
   }
 

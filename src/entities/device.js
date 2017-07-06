@@ -1,6 +1,7 @@
 import {helpers} from 'inversify-vanillajs-helpers'
 import {TYPES} from '../types'
 
+import merge from 'deepmerge'
 import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
 import {schema as propertiesSchema} from '../schemas/device/properties'
 import {schema as actionsSchema} from '../schemas/device/actions'
@@ -50,10 +51,11 @@ export class Device {
 
   getProperties () { return this._properties }
   setProperties (properties) {
-    const {error} = propertiesSchema.validate(properties)
+    const merged = merge(this._properties, properties)
+    const {error} = propertiesSchema.validate(merged)
     if (error) return this._logger.error(error)
-    Object.assign(this._properties, properties)
-    this._updateBus.notify(DEVICE_UPDATE_TYPES.PROPERTIES_SET, this._id, properties)
+    this._properties = merged
+    this._updateBus.notify(DEVICE_UPDATE_TYPES.PROPERTIES_SET, this._id, this._properties)
   }
   removeProperties (properties) {
     for (const property of properties) {
@@ -68,7 +70,8 @@ export class Device {
 
   getCredentials () { return this._credentials }
   setCredentials (credentials) {
-    Object.assign(this._credentials, credentials)
+    const merged = merge(this._credentials, credentials)
+    this._credentials = merged
   }
   removeCredentials (credentials) {
     for (const credential of credentials) {
@@ -81,10 +84,11 @@ export class Device {
 
   getActions () { return this._actions }
   setActions (actions) {
-    const {error} = actionsSchema.validate(actions)
+    const merged = merge(this._actions, actions)
+    const {error} = actionsSchema.validate(merged)
     if (error) return this._logger.error(error)
-    Object.assign(this._actions, actions)
-    this._updateBus.notify(DEVICE_UPDATE_TYPES.ACTIONS_SET, this._id, actions)
+    this._actions = merged
+    this._updateBus.notify(DEVICE_UPDATE_TYPES.ACTIONS_SET, this._id, this._actions)
   }
   removeActions (actions) {
     for (const action of actions) {
