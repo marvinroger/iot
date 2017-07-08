@@ -24,7 +24,7 @@ export class App {
     ]
 
     if (process.env.NODE_ENV === 'development') {
-      this._plugins.push(dummyPlugin)
+      // this._plugins.push(dummyPlugin)
     }
   }
 

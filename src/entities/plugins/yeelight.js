@@ -2,6 +2,69 @@ import {helpers} from 'inversify-vanillajs-helpers'
 
 import {Lookup as YeelightLookup} from 'node-yeelight-wifi'
 
+const PROPERTY_ON = 'on'
+const PROPERTY_INTENSITY = 'intensity'
+const PROPERTY_COLOR = 'color'
+const PROPERTIES = {
+  [PROPERTY_ON]: {
+    [PROPERTY_ON]: {
+      name: 'Allumé',
+      type: 'boolean',
+      value: false
+    }
+  },
+  [PROPERTY_INTENSITY]: {
+    [PROPERTY_INTENSITY]: {
+      name: 'Intensité',
+      type: 'range',
+      range: [0, 100],
+      value: 100
+    }
+  },
+  [PROPERTY_COLOR]: {
+    [PROPERTY_COLOR]: {
+      name: 'Couleur',
+      type: 'color',
+      value: [255, 255, 255]
+    }
+  }
+}
+
+const ACTION_TURN_ON = 'turnOn'
+const ACTION_TURN_OFF = 'turnOff'
+const ACTION_SET_INTENSITY = 'setIntensity'
+const ACTION_SET_COLOR = 'setColor'
+const ACTIONS = {
+  [ACTION_TURN_ON]: {
+    [ACTION_TURN_ON]: {
+      name: 'Allumer'
+    }
+  },
+  [ACTION_TURN_OFF]: {
+    [ACTION_TURN_OFF]: {
+      name: 'Éteindre'
+    }
+  },
+  [ACTION_SET_INTENSITY]: {
+    [ACTION_SET_INTENSITY]: {
+      name: "Définir l'intensité",
+      accepts: [
+        { type: 'range', range: [0, 100] }
+      ]
+    }
+  },
+  [ACTION_SET_COLOR]: {
+    [ACTION_SET_COLOR]: {
+      name: 'Définir la couleur',
+      accepts: [
+        { type: 'color' }
+      ]
+    }
+  }
+}
+
+const CREDENTIAL_ID = 'id'
+
 export class Yeelight {
   constructor () {
     this.name = 'Yeelight'
@@ -17,7 +80,7 @@ export class Yeelight {
 
   async restore (device) {
     this._discovered[device.getCredentials().id] = { yeelightInstance: null, device }
-    this._mapping[device.getId()] = device.getCredentials().id
+    this._mapping[device.getId()] = device.getCredentials()[CREDENTIAL_ID]
     device.setOnline(false)
     await device.sync()
   }
@@ -25,16 +88,20 @@ export class Yeelight {
   startDiscovery (discoverer) {
     const yeelightLookup = new YeelightLookup()
     yeelightLookup.on('detected', async (lightBulb) => {
+      await lightBulb.setPower(false)
+
       const id = lightBulb.id
       if (this._discovered[id] === undefined) {
         const device = await discoverer.discover({
           name: 'Yeelight',
           actions: {},
-          credentials: { id },
-          properties: {}
+          credentials: { [CREDENTIAL_ID]: id },
+          properties: {},
+          image: 'lamp'
         })
 
         this._discovered[id] = { device }
+        this._mapping[device.getId()] = id
       }
 
       this._discovered[id].yeelightInstance = lightBulb
@@ -58,40 +125,14 @@ export class Yeelight {
       })
 
       device.setOnline(true)
+      device.clearProperties()
       device.setProperties({
-        on: {
-          name: 'Allumé',
-          type: 'boolean',
-          value: true
-        },
-        intensity: {
-          name: 'Intensité',
-          type: 'range',
-          range: [0, 100],
-          value: 50
-        },
-        color: {
-          name: 'Couleur',
-          type: 'color',
-          value: [255, 0, 0]
-        }
+        ...PROPERTIES[PROPERTY_ON]
       })
+
+      device.clearActions()
       device.setActions({
-        turnOff: {
-          name: 'Éteindre'
-        },
-        setIntensity: {
-          name: "Définir l'intensité",
-          accepts: [
-            { type: 'range', range: [0, 100] }
-          ]
-        },
-        setColor: {
-          name: 'Définir la couleur',
-          accepts: [
-            { type: 'color' }
-          ]
-        }
+        ...ACTIONS[ACTION_TURN_ON]
       })
       await device.sync()
     })
@@ -103,11 +144,50 @@ export class Yeelight {
     if (!discovered || !discovered.yeelightInstance) return
 
     const lightBulb = discovered.yeelightInstance
+    const device = discovered.device
 
-    if (action.action === 'setColor') {
+    if (action.action === ACTION_TURN_ON) {
+      await lightBulb.setPower(true)
+      device.clearProperties()
+      device.setProperties({
+        ...PROPERTIES[PROPERTY_ON],
+        ...PROPERTIES[PROPERTY_INTENSITY],
+        ...PROPERTIES[PROPERTY_COLOR]
+      })
+      device.setProperties({ [PROPERTY_ON]: { value: true } })
+
+      device.clearActions()
+      device.setActions({
+        ...ACTIONS[ACTION_TURN_OFF],
+        ...ACTIONS[ACTION_SET_INTENSITY],
+        ...ACTIONS[ACTION_SET_COLOR]
+      })
+    } else if (action.action === ACTION_TURN_OFF) {
+      await lightBulb.setPower(false)
+      device.clearProperties()
+      device.setProperties({
+        ...PROPERTIES[PROPERTY_ON]
+      })
+
+      device.clearActions()
+      device.setActions({
+        ...ACTIONS[ACTION_TURN_ON]
+      })
+    } else if (action.action === ACTION_SET_INTENSITY) {
+      const intensity = action.params[0]
+      await lightBulb.setBright(intensity)
+      device.setProperties({
+        [PROPERTY_INTENSITY]: { value: intensity }
+      })
+    } else if (action.action === ACTION_SET_COLOR) {
       const rgb = action.params[0]
       await lightBulb.setRGB(rgb)
+      device.setProperties({
+        [PROPERTY_COLOR]: { value: rgb }
+      })
     }
+
+    await device.sync()
   }
 }
 

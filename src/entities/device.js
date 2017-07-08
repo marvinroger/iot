@@ -6,6 +6,12 @@ import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
 import {schema as propertiesSchema} from '../schemas/device/properties'
 import {schema as actionsSchema} from '../schemas/device/actions'
 
+const MERGE_OPTIONS = {
+  arrayMerge (destinationArray, sourceArray) { // we want array to be replaced
+    return sourceArray
+  }
+}
+
 export class Device {
   constructor (updateBus, logger) {
     this._updateBus = updateBus
@@ -51,7 +57,7 @@ export class Device {
 
   getProperties () { return this._properties }
   setProperties (properties) {
-    const merged = merge(this._properties, properties)
+    const merged = merge(this._properties, properties, MERGE_OPTIONS)
     const {error} = propertiesSchema.validate(merged)
     if (error) return this._logger.error(error)
     this._properties = merged
@@ -70,7 +76,7 @@ export class Device {
 
   getCredentials () { return this._credentials }
   setCredentials (credentials) {
-    const merged = merge(this._credentials, credentials)
+    const merged = merge(this._credentials, credentials, MERGE_OPTIONS)
     this._credentials = merged
   }
   removeCredentials (credentials) {
@@ -84,7 +90,7 @@ export class Device {
 
   getActions () { return this._actions }
   setActions (actions) {
-    const merged = merge(this._actions, actions)
+    const merged = merge(this._actions, actions, MERGE_OPTIONS)
     const {error} = actionsSchema.validate(merged)
     if (error) return this._logger.error(error)
     this._actions = merged
