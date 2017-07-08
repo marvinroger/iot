@@ -1,6 +1,8 @@
 node_modules/
 /lib/
 
-db.sqlite
+/data/
+/db.sqlite
+/config.json
 
 .DS_Store

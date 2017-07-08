@@ -2,6 +2,8 @@ import {helpers} from 'inversify-vanillajs-helpers'
 import {TYPES} from '../types'
 
 import path from 'path'
+import fs from 'fs'
+import {promisify} from 'util'
 
 import express from 'express'
 import bodyParser from 'body-parser'
@@ -11,11 +13,13 @@ import cookie from 'cookie'
 import {version} from '../../package.json'
 import * as hash from '../helpers/hash'
 
+const fsAccess = promisify(fs.access)
+
 export class ExpressApp {
   constructor (userModel, authTokenModel, config) {
     this._User = userModel.get()
     this._AuthToken = authTokenModel.get()
-    this._config = config
+    this._config = config.get()
 
     this._app = express()
 
@@ -53,7 +57,16 @@ export class ExpressApp {
     })
 
     this._app.get('/api/user-avatar/:id', async (req, res) => {
-      res.sendFile(path.join(__dirname, '../assets/sample-avatar.jpg'))
+      const avatarsPath = path.join(this._config.meta.resolvedDataDirectory, 'avatars')
+      const avatarPath = path.join(avatarsPath, `${req.params.id}.jpg`)
+      try {
+        await fsAccess(avatarPath, fs.constants.R_OK)
+        const absolute = path.resolve(avatarPath)
+        return res.sendFile(absolute)
+      } catch (err) {
+        const absolute = path.resolve(path.join(__dirname, '../assets/sample-avatar.jpg'))
+        return res.sendFile(absolute)
+      }
     })
 
     this._app.post('/api/login', async (req, res) => {
@@ -104,7 +117,7 @@ export class ExpressApp {
 
     this._app.get('/api/handshake', async (req, res) => {
       const object = {
-        language: this._config.get().language,
+        language: this._config.language,
         version
       }
 

@@ -24,6 +24,7 @@ export const argv = yargs
         const content = await readFile(argv.config)
         const parsed = JSON.parse(content)
         params.config = parsed
+        params.config.meta = { configurationFilePath: argv.config }
       } catch (err) {
         console.log('invalid configuration file')
         process.exit(1)

@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer persistent clipped :mini-variant.sync="mini" v-model="drawer">
+    <v-navigation-drawer persistent clipped v-model="drawer">
       <v-list class="pa-0">
         <v-list-tile avatar tag="div">
           <v-list-tile-avatar>
@@ -9,11 +9,6 @@
           <v-list-tile-content>
             <v-list-tile-title>{{ $store.state.user.name }}</v-list-tile-title>
           </v-list-tile-content>
-          <v-list-tile-action>
-            <v-btn icon @click.native.stop="mini = !mini">
-              <v-icon>chevron_left</v-icon>
-            </v-btn>
-          </v-list-tile-action>
         </v-list-tile>
       </v-list>
       <v-list class="pt-0" dense>
@@ -64,8 +59,7 @@
         items: [
           { title: this.$i18n.t('dashboard.devices.title'), icon: 'dashboard', url: '/dashboard' },
           { title: this.$i18n.t('dashboard.settings.title'), icon: 'settings', url: '/dashboard/settings', requiresRole: ['admin'] }
-        ],
-        mini: false
+        ]
       }
     },
     created () {
