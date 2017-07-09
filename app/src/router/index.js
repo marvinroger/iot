@@ -9,6 +9,7 @@ import Login from '../components/pages/Login'
 import Dashboard from '../components/pages/Dashboard'
 
 import DashboardDevices from '../components/pages/dashboard/Devices'
+import DashboardRooms from '../components/pages/dashboard/Rooms'
 import DashboardSettings from '../components/pages/dashboard/Settings'
 
 Vue.use(VueRouter)
@@ -22,6 +23,7 @@ export const router = new VueRouter({
       meta: { title: `🏠 ${i18n.t('dashboard.title')}`, requiresAuth: true },
       children: [
         { path: '/', component: DashboardDevices, meta: { title: i18n.t('dashboard.devices.title') } },
+        { path: 'rooms', component: DashboardRooms, meta: { title: i18n.t('dashboard.rooms.title') } },
         { path: 'settings', component: DashboardSettings, meta: { title: i18n.t('dashboard.settings.title'), requiresRole: ['admin'] } }
       ]
     },

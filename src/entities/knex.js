@@ -1,14 +1,15 @@
 import {helpers} from 'inversify-vanillajs-helpers'
+import {TYPES} from '../types'
 
 import {join} from 'path'
 import knex from 'knex'
 
 export class Knex {
-  constructor () {
+  constructor (config) {
     this._knex = knex({
       client: 'sqlite3',
       connection: {
-        filename: './db.sqlite'
+        filename: `${config.get().meta.resolvedDataDirectory}/db.sqlite`
       },
       useNullAsDefault: true,
       migrations: {
@@ -23,4 +24,4 @@ export class Knex {
   }
 }
 
-helpers.annotate(Knex)
+helpers.annotate(Knex, [TYPES.Config])

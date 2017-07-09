@@ -9,8 +9,9 @@ import {EVENT_TYPES} from '../../common/event-types'
 import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
 
 export class WsServer {
-  constructor (httpServer, authTokenModel, devicePool, updateBus) {
+  constructor (httpServer, authTokenModel, room, devicePool, updateBus) {
     const AuthToken = authTokenModel.get()
+    this._Room = room.get()
     this._devicePool = devicePool
     this._updateBus = updateBus
 
@@ -75,6 +76,17 @@ export class WsServer {
           })
 
           sendResponse(message, true)
+        } else if (message.method === 'createRoom') {
+          const {name} = message.parameters
+
+          const room = this._Room().forge({
+            name
+          }).save()
+
+          sendResponse(message, {
+            id: room.id,
+            name
+          })
         }
       })
 
@@ -112,4 +124,4 @@ export class WsServer {
   }
 }
 
-helpers.annotate(WsServer, [TYPES.HttpServer, TYPES.models.AuthToken, TYPES.DevicePool, TYPES.UpdateBus])
+helpers.annotate(WsServer, [TYPES.HttpServer, TYPES.models.AuthToken, TYPES.models.Room, TYPES.DevicePool, TYPES.UpdateBus])

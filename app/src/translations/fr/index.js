@@ -27,6 +27,9 @@ export const messages = {
       property: 'Propriété',
       value: 'Valeur'
     },
+    rooms: {
+      title: 'Pièces'
+    },
     settings: {
       title: 'Paramètres'
     }

@@ -18,6 +18,8 @@ import {Device} from './entities/device'
 import {Device as DeviceModel} from './entities/models/device'
 import {User as UserModel} from './entities/models/user'
 import {AuthToken as AuthTokenModel} from './entities/models/auth-token'
+import {Room as RoomModel} from './entities/models/room'
+import {Meta as MetaModel} from './entities/models/meta'
 
 import {Dummy} from './entities/plugins/dummy'
 import {Yeelight} from './entities/plugins/yeelight'
@@ -42,6 +44,8 @@ container.bind(TYPES.factories.Device).toAutoFactory(TYPES.Device)
 container.bind(TYPES.models.Device).to(DeviceModel).inSingletonScope()
 container.bind(TYPES.models.User).to(UserModel).inSingletonScope()
 container.bind(TYPES.models.AuthToken).to(AuthTokenModel).inSingletonScope()
+container.bind(TYPES.models.Room).to(RoomModel).inSingletonScope()
+container.bind(TYPES.models.Meta).to(MetaModel).inSingletonScope()
 
 container.bind(TYPES.plugins.Dummy).to(Dummy).inSingletonScope()
 container.bind(TYPES.plugins.Yeelight).to(Yeelight).inSingletonScope()

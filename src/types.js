@@ -17,7 +17,9 @@ export const TYPES = {
   models: {
     Device: Symbol('Model<Device>'),
     AuthToken: Symbol('Model<AuthToken>'),
-    User: Symbol('Model<User>')
+    User: Symbol('Model<User>'),
+    Room: Symbol('Model<Room>'),
+    Meta: Symbol('Model<Meta>')
   },
   plugins: {
     Yeelight: Symbol('Plugin<Yeelight>'),

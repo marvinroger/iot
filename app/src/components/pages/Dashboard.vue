@@ -57,7 +57,8 @@
         HTTP_API_URL,
         drawer: true,
         items: [
-          { title: this.$i18n.t('dashboard.devices.title'), icon: 'dashboard', url: '/dashboard' },
+          { title: this.$i18n.t('dashboard.devices.title'), icon: 'lightbulb_outline', url: '/dashboard' },
+          { title: this.$i18n.t('dashboard.rooms.title'), icon: 'dashboard', url: '/dashboard/rooms' },
           { title: this.$i18n.t('dashboard.settings.title'), icon: 'settings', url: '/dashboard/settings', requiresRole: ['admin'] }
         ]
       }
