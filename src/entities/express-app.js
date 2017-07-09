@@ -64,7 +64,20 @@ export class ExpressApp {
         const absolute = path.resolve(avatarPath)
         return res.sendFile(absolute)
       } catch (err) {
-        const absolute = path.resolve(path.join(__dirname, '../assets/sample-avatar.jpg'))
+        const absolute = path.resolve(path.join(__dirname, '../assets/no-avatar.jpg'))
+        return res.sendFile(absolute)
+      }
+    })
+
+    this._app.get('/api/room-picture/:id', async (req, res) => {
+      const picturesPath = path.join(this._config.meta.resolvedDataDirectory, 'rooms')
+      const picturePath = path.join(picturesPath, `${req.params.id}.jpg`)
+      try {
+        await fsAccess(picturePath, fs.constants.R_OK)
+        const absolute = path.resolve(picturePath)
+        return res.sendFile(absolute)
+      } catch (err) {
+        const absolute = path.resolve(path.join(__dirname, '../assets/sample-room.jpg'))
         return res.sendFile(absolute)
       }
     })

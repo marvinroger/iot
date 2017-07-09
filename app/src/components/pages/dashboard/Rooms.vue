@@ -45,7 +45,7 @@
           <v-card-media
             class="white--text"
             height="100%"
-            src="https://unsplash.it/458/354"
+            :src="`${HTTP_API_URL}/room-picture/${item.i}`"
           >
             <v-container fill-height fluid class="pa-0">
               <v-layout fill-height class="ma-0">
@@ -66,10 +66,13 @@
   import {GridLayout, GridItem} from 'vue-grid-layout'
   import textfit from 'textfit'
 
+  import {HTTP_API_URL} from '../../../constants'
+
   export default {
     components: { GridLayout, GridItem },
     data () {
       return {
+        HTTP_API_URL,
         rearrange: false,
         roomName: ''
       }
