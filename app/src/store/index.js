@@ -8,6 +8,7 @@ import {WS_API_URL} from '../constants'
 import {parseMessage, MESSAGE_TYPES} from '../../../common/ws-messages'
 import {EVENT_TYPES} from '../../../common/event-types'
 import {DEVICE_UPDATE_TYPES} from '../../../common/device-update-types'
+import {ROOM_UPDATE_TYPES} from '../../../common/room-update-types'
 
 Vue.use(Vuex)
 
@@ -26,7 +27,9 @@ export const store = new Vuex.Store({
       connected: false,
       instance: null
     },
-    devices: {}
+    devices: {},
+    rooms: {},
+    roomsPositions: []
   },
   mutations: {
     setLoading (state, loading) {
@@ -83,6 +86,14 @@ export const store = new Vuex.Store({
           delete state.devices[update.id].actions[action]
         }
       }
+    },
+    handleRoomUpdate (state, update) {
+      if (update.type === ROOM_UPDATE_TYPES.ROOM_ADDED) {
+        Vue.set(state.rooms, update.id, update.name)
+        state.roomsPositions.push(update.position)
+      } else if (update.type === ROOM_UPDATE_TYPES.ROOM_POSITIONS_REPLACED) {
+        state.roomsPositions = update.positions
+      }
     }
   },
   actions: {
@@ -108,12 +119,12 @@ export const store = new Vuex.Store({
       })
       ws.start()
     },
-    disconnectFromWebsocket ({ state, commit }) {
+    disconnectFromWebsocket ({ state }) {
       if (!state.websocket.instance) return
       state.websocket.instance.stop()
       state.websocket.instance = null
     },
-    async triggerAction ({ state, commit }, { action, deviceId, params }) {
+    async triggerAction ({ state }, { action, deviceId, params }) {
       await makeWsRequest({
         ws: state.websocket.instance,
         method: 'triggerAction',
@@ -121,6 +132,24 @@ export const store = new Vuex.Store({
           action,
           deviceId,
           params
+        }
+      })
+    },
+    async addRoom ({ state }, { name }) {
+      await makeWsRequest({
+        ws: state.websocket.instance,
+        method: 'addRoom',
+        parameters: {
+          name
+        }
+      })
+    },
+    async updateRoomsPositions ({ state }, { positions }) {
+      await makeWsRequest({
+        ws: state.websocket.instance,
+        method: 'updateRoomsPositions',
+        parameters: {
+          positions
         }
       })
     }
@@ -135,6 +164,9 @@ const wsMessageHandler = (message) => {
   switch (parsed.event) {
     case EVENT_TYPES.DEVICE_UPDATE:
       store.commit('handleDeviceUpdate', parsed.value)
+      break
+    case EVENT_TYPES.ROOM_UPDATE:
+      store.commit('handleRoomUpdate', parsed.value)
       break
   }
 }

@@ -2,22 +2,44 @@
   <div>
     <h4>{{ $t('dashboard.rooms.title') }}</h4>
 
+    <v-container fluid>
+      <v-layout row>
+        <v-flex xs8>
+          <form @submit.prevent="addRoom">
+            <v-text-field
+              name="input-1"
+              :label="$t('dashboard.rooms.addRoom')"
+              v-model="roomName"
+            />
+          </form>
+        </v-flex>
+
+        <v-flex xs4>
+          <v-switch :label="$t('dashboard.rooms.rearrange')" v-model="rearrange" />
+        </v-flex>
+      </v-layout>
+    </v-container>
+
     <grid-layout
-      :layout="layout"
+      :layout="$store.state.roomsPositions"
       :col-num="12"
       :row-height="30"
-      :is-draggable="true"
-      :is-resizable="true"
-      :vertical-compact="true"
+      :is-draggable="rearrange"
+      :is-resizable="rearrange"
+      :vertical-compact="false"
       :margin="[10, 10]"
       :use-css-transforms="true"
     >
-      <grid-item v-for="item in layout" :key="item.i"
+      <grid-item v-for="item in $store.state.roomsPositions" :key="item.i"
         :x="item.x"
         :y="item.y"
         :w="item.w"
         :h="item.h"
         :i="item.i"
+        :minW="2"
+        :minH="2"
+        @resized="onLayoutChange"
+        @moved="onLayoutChange"
       >
         <v-card class="fill-height">
           <v-card-media
@@ -28,7 +50,7 @@
             <v-container fill-height fluid class="pa-0">
               <v-layout fill-height class="ma-0">
                 <v-flex xs12 align-end flexbox class="pa-0">
-                  <div class="custom-headline custom-transparent-black fittext">{{ roomNames[item.i] }}</div>
+                  <div class="custom-headline custom-transparent-black fittext">{{ $store.state.rooms[item.i] }}</div>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -48,35 +70,18 @@
     components: { GridLayout, GridItem },
     data () {
       return {
-        layout: [
-          {"x":0,"y":0,"w":2,"h":2,"i":"0"},
-    	    {"x":2,"y":0,"w":2,"h":4,"i":"1"},
-    	    {"x":4,"y":0,"w":2,"h":5,"i":"2"},
-    	    {"x":6,"y":0,"w":2,"h":3,"i":"3"},
-    	    {"x":8,"y":0,"w":2,"h":3,"i":"4"},
-    	    {"x":10,"y":0,"w":2,"h":3,"i":"5"},
-    	    {"x":0,"y":5,"w":2,"h":5,"i":"6"},
-    	    {"x":2,"y":5,"w":2,"h":5,"i":"7"},
-        ],
-        roomNames: {
-          '0': 'Chambre #1',
-          '1': 'Chambre #2',
-          '2': 'Salle de bain',
-          '3': 'Couloir',
-          '4': 'Toilettes',
-          '5': 'Cuisine',
-          '6': 'Salon',
-          '7': 'Jardin'
-        }
+        rearrange: false,
+        roomName: ''
       }
     },
-    mounted () {
-      setTimeout (() => {
-        const elements = document.getElementsByClassName('fittext')
-        for (const element of elements) {
-          window.fitText(element, 0.8)
-        }
-      }, 3000)
+    methods: {
+      addRoom () {
+        this.$store.dispatch('addRoom', { name: this.roomName })
+        this.roomName = ''
+      },
+      onLayoutChange () {
+        this.$store.dispatch('updateRoomsPositions', { positions: this.$store.state.roomsPositions })
+      }
     }
   }
 </script>

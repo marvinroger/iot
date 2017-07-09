@@ -38,7 +38,7 @@ export async function up (knex) {
 
   await knex('metas').insert([
     { key: 'settings', value: '{}' },
-    { key: 'roomsPositions', value: '{}' }
+    { key: 'roomsPositions', value: '[]' }
   ])
 
   await knex('users').insert([

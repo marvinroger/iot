@@ -28,7 +28,9 @@ export const messages = {
       value: 'Value'
     },
     rooms: {
-      title: 'Rooms'
+      title: 'Rooms',
+      addRoom: 'Add a room',
+      rearrange: 'Rearrange'
     },
     settings: {
       title: 'Settings'

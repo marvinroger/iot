@@ -7,11 +7,13 @@ import cookie from 'cookie'
 import {generateMessage, parseMessage, MESSAGE_TYPES} from '../../common/ws-messages'
 import {EVENT_TYPES} from '../../common/event-types'
 import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
+import {ROOM_UPDATE_TYPES} from '../../common/room-update-types'
 
 export class WsServer {
-  constructor (httpServer, authTokenModel, room, devicePool, updateBus) {
+  constructor (httpServer, authTokenModel, room, meta, devicePool, updateBus) {
     const AuthToken = authTokenModel.get()
     this._Room = room.get()
+    this._Meta = meta.get()
     this._devicePool = devicePool
     this._updateBus = updateBus
 
@@ -58,7 +60,7 @@ export class WsServer {
         ws.send(generateMessage({ type: MESSAGE_TYPES.RESPONSE, id: request.id, value }))
       }
 
-      ws.on('message', (data) => {
+      ws.on('message', async (data) => {
         const message = parseMessage(data)
 
         if (message.type !== MESSAGE_TYPES.REQUEST) return
@@ -76,17 +78,50 @@ export class WsServer {
           })
 
           sendResponse(message, true)
-        } else if (message.method === 'createRoom') {
+        } else if (message.method === 'addRoom') {
           const {name} = message.parameters
 
-          const room = this._Room().forge({
+          const room = await this._Room.forge({
             name
           }).save()
+
+          const roomsPositions = await this._Meta.where({ key: 'roomsPositions' }).fetch()
+          const position = {x: 0, y: 0, w: 2, h: 2, i: room.id.toString()}
+          roomsPositions.attributes['value'].push(position)
+          await roomsPositions.save()
+
+          this.broadcast(generateMessage({
+            type: MESSAGE_TYPES.EVENT,
+            event: EVENT_TYPES.ROOM_UPDATE,
+            value: {
+              type: ROOM_UPDATE_TYPES.ROOM_ADDED,
+              id: room.id.toString(),
+              name,
+              position
+            }
+          }))
 
           sendResponse(message, {
             id: room.id,
             name
           })
+        } else if (message.method === 'updateRoomsPositions') {
+          const {positions} = message.parameters
+
+          const roomsPositions = await this._Meta.where({ key: 'roomsPositions' }).fetch()
+          roomsPositions.attributes['value'] = positions
+          await roomsPositions.save()
+
+          this.broadcast(generateMessage({
+            type: MESSAGE_TYPES.EVENT,
+            event: EVENT_TYPES.ROOM_UPDATE,
+            value: {
+              type: ROOM_UPDATE_TYPES.ROOM_POSITIONS_REPLACED,
+              positions
+            }
+          }))
+
+          sendResponse(message, true)
         }
       })
 
@@ -110,6 +145,23 @@ export class WsServer {
           }
         }))
       }
+
+      const roomsPositions = await this._Meta.where({ key: 'roomsPositions' }).fetch()
+      const rooms = await this._Room.fetchAll()
+
+      for (const room of rooms.models) {
+        const roomPosition = roomsPositions.attributes['value'].filter(elem => elem.i === room.id.toString())[0]
+        ws.send(generateMessage({
+          type: MESSAGE_TYPES.EVENT,
+          event: EVENT_TYPES.ROOM_UPDATE,
+          value: {
+            type: ROOM_UPDATE_TYPES.ROOM_ADDED,
+            id: room.id.toString(),
+            name: room.attributes['name'],
+            position: roomPosition
+          }
+        }))
+      }
     })
   }
 
@@ -124,4 +176,4 @@ export class WsServer {
   }
 }
 
-helpers.annotate(WsServer, [TYPES.HttpServer, TYPES.models.AuthToken, TYPES.models.Room, TYPES.DevicePool, TYPES.UpdateBus])
+helpers.annotate(WsServer, [TYPES.HttpServer, TYPES.models.AuthToken, TYPES.models.Room, TYPES.models.Meta, TYPES.DevicePool, TYPES.UpdateBus])

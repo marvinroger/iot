@@ -6,7 +6,8 @@ export class Meta {
   constructor (bookshelf) {
     this._bookshelf = bookshelf.get()
     this._Meta = this._bookshelf.Model.extend({
-      tableName: 'metas'
+      tableName: 'metas',
+      idAttribute: 'key'
     }, {
       jsonColumns: ['value']
     })
