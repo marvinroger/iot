@@ -8,10 +8,12 @@ import {Knex} from './entities/knex'
 import {Bookshelf} from './entities/bookshelf'
 import {HttpServer} from './entities/http-server'
 import {WsServer} from './entities/ws-server'
+import {WsBroadcaster} from './entities/ws-broadcaster'
 import {ExpressApp} from './entities/express-app'
 import {UpdateBus} from './entities/update-bus'
 import {Discoverer} from './entities/discoverer'
 import {DevicePool} from './entities/device-pool'
+import {RequestResponder} from './entities/request-responder'
 
 import {Device} from './entities/device'
 
@@ -33,10 +35,12 @@ container.bind(TYPES.Knex).to(Knex).inSingletonScope()
 container.bind(TYPES.Bookshelf).to(Bookshelf).inSingletonScope()
 container.bind(TYPES.HttpServer).to(HttpServer).inSingletonScope()
 container.bind(TYPES.WsServer).to(WsServer).inSingletonScope()
+container.bind(TYPES.WsBroadcaster).to(WsBroadcaster).inSingletonScope()
 container.bind(TYPES.ExpressApp).to(ExpressApp).inSingletonScope()
 container.bind(TYPES.UpdateBus).to(UpdateBus).inSingletonScope()
 container.bind(TYPES.Discoverer).to(Discoverer).inSingletonScope()
 container.bind(TYPES.DevicePool).to(DevicePool).inSingletonScope()
+container.bind(TYPES.RequestResponder).to(RequestResponder).inSingletonScope()
 
 container.bind(TYPES.Device).to(Device)
 container.bind(TYPES.factories.Device).toAutoFactory(TYPES.Device)

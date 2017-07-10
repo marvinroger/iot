@@ -6,11 +6,13 @@ export const TYPES = {
   Bookshelf: Symbol('Bookshelf'),
   HttpServer: Symbol('HttpServer'),
   WsServer: Symbol('WsServer'),
+  WsBroadcaster: Symbol('WsBroadcaster'),
   ExpressApp: Symbol('ExpressApp'),
   Discoverer: Symbol('Discoverer'),
   UpdateBus: Symbol('UpdateBus'),
   DevicePool: Symbol('DevicePool'),
   Device: Symbol('Device'),
+  RequestResponder: Symbol('RequestResponder'),
   factories: {
     Device: Symbol('Factory<Device>')
   },

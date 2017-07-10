@@ -10,12 +10,12 @@ import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
 import {ROOM_UPDATE_TYPES} from '../../common/room-update-types'
 
 export class WsServer {
-  constructor (httpServer, authTokenModel, room, meta, devicePool, updateBus) {
+  constructor (httpServer, authTokenModel, room, meta, devicePool, requestResponder) {
     const AuthToken = authTokenModel.get()
     this._Room = room.get()
     this._Meta = meta.get()
     this._devicePool = devicePool
-    this._updateBus = updateBus
+    this._requestResponder = requestResponder
 
     this._wsServer = new WebSocket.Server({
       server: httpServer.get(),
@@ -34,14 +34,6 @@ export class WsServer {
     })
 
     this._clients = new Set()
-
-    this._updateBus.on('update', (data) => {
-      this.broadcast(generateMessage({
-        type: MESSAGE_TYPES.EVENT,
-        event: EVENT_TYPES.DEVICE_UPDATE,
-        value: data
-      }))
-    })
   }
 
   setup () {
@@ -56,73 +48,12 @@ export class WsServer {
         this._clients.delete(clientObject)
       })
 
-      const sendResponse = (request, value) => {
-        ws.send(generateMessage({ type: MESSAGE_TYPES.RESPONSE, id: request.id, value }))
-      }
-
       ws.on('message', async (data) => {
         const message = parseMessage(data)
 
         if (message.type !== MESSAGE_TYPES.REQUEST) return
 
-        if (message.method === 'triggerAction') {
-          const {action, deviceId, params} = message.parameters
-
-          const device = this._devicePool.getDevice(deviceId)
-          if (!device) return sendResponse(message, false)
-
-          device.getPlugin().handleAction({
-            deviceId,
-            action,
-            params
-          })
-
-          sendResponse(message, true)
-        } else if (message.method === 'addRoom') {
-          const {name} = message.parameters
-
-          const room = await this._Room.forge({
-            name
-          }).save()
-
-          const roomsPositions = await this._Meta.where({ key: 'roomsPositions' }).fetch()
-          const position = {x: 0, y: 0, w: 2, h: 2, i: room.id.toString()}
-          roomsPositions.attributes['value'].push(position)
-          await roomsPositions.save()
-
-          this.broadcast(generateMessage({
-            type: MESSAGE_TYPES.EVENT,
-            event: EVENT_TYPES.ROOM_UPDATE,
-            value: {
-              type: ROOM_UPDATE_TYPES.ROOM_ADDED,
-              id: room.id.toString(),
-              name,
-              position
-            }
-          }))
-
-          sendResponse(message, {
-            id: room.id,
-            name
-          })
-        } else if (message.method === 'updateRoomsPositions') {
-          const {positions} = message.parameters
-
-          const roomsPositions = await this._Meta.where({ key: 'roomsPositions' }).fetch()
-          roomsPositions.attributes['value'] = positions
-          await roomsPositions.save()
-
-          this.broadcast(generateMessage({
-            type: MESSAGE_TYPES.EVENT,
-            event: EVENT_TYPES.ROOM_UPDATE,
-            value: {
-              type: ROOM_UPDATE_TYPES.ROOM_POSITIONS_REPLACED,
-              positions
-            }
-          }))
-
-          sendResponse(message, true)
-        }
+        this._requestResponder.handle({ request: message, ws, user: req.user })
       })
 
       // sending initial messages
@@ -165,10 +96,8 @@ export class WsServer {
     })
   }
 
-  broadcast (message) {
-    for (const client of this._clients) {
-      client.ws.send(message)
-    }
+  getClients () {
+    return this._clients
   }
 
   get () {
@@ -176,4 +105,4 @@ export class WsServer {
   }
 }
 
-helpers.annotate(WsServer, [TYPES.HttpServer, TYPES.models.AuthToken, TYPES.models.Room, TYPES.models.Meta, TYPES.DevicePool, TYPES.UpdateBus])
+helpers.annotate(WsServer, [TYPES.HttpServer, TYPES.models.AuthToken, TYPES.models.Room, TYPES.models.Meta, TYPES.DevicePool, TYPES.RequestResponder])
