@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --out-dir lib",
     "lint": "standard \"src/**/*.js\"",
-    "dev": "cross-env NODE_ENV=development babel-watch src/bin/cli.js -- start",
+    "dev": "cross-env NODE_ENV=development babel-watch src/bin/cli.js -- start --config ./config.json",
     "dev-all": "concurrently --names \"server,client\" --prefix-colors \"magenta,green\" \"npm run dev\" \"cd app && cross-env NODE_ENV=development npm run dev\"",
     "install-all": "npm install && cd app && npm install"
   },

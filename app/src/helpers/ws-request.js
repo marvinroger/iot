@@ -1,8 +1,8 @@
-import {generateMessage, parseMessage, MESSAGE_TYPES} from '../../../common/ws-messages'
+import {generateRequest, parseMessage, MESSAGE_TYPES} from '../../../common/ws-messages'
 
 export function makeWsRequest ({ ws, method, parameters }) {
   return new Promise(function (resolve, reject) {
-    const request = generateMessage({ type: MESSAGE_TYPES.REQUEST, method, parameters })
+    const request = generateRequest(method, parameters)
 
     const removeWsListener = () => ws.removeListener('message', onMessage)
 

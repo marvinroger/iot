@@ -39,12 +39,13 @@ export function parseMessage (text) {
   }
 }
 
-export function generateMessage (options) {
+function generateMessage (options) {
   switch (options.type) {
     case MESSAGE_TYPES.EVENT:
       return JSON.stringify([MESSAGE_TYPES.EVENT, options.event, options.value])
     case MESSAGE_TYPES.REQUEST:
       const id = uuid()
+
       return {
         id,
         text: JSON.stringify([MESSAGE_TYPES.REQUEST, id, options.method, options.parameters])
@@ -52,4 +53,30 @@ export function generateMessage (options) {
     case MESSAGE_TYPES.RESPONSE:
       return JSON.stringify([MESSAGE_TYPES.RESPONSE, options.id, options.value])
   }
+}
+
+export function generateEvent (event, value) {
+  return generateMessage({
+    type: MESSAGE_TYPES.EVENT,
+    event,
+    value
+  })
+}
+
+export function generateRequest (method, parameters) {
+  return generateMessage({
+    type: MESSAGE_TYPES.REQUEST,
+    method,
+    parameters
+  })
+}
+
+export function generateResponse (request, response) {
+  const {id} = request
+
+  return generateMessage({
+    type: MESSAGE_TYPES.RESPONSE,
+    id,
+    value: response
+  })
 }

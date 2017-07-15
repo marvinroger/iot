@@ -86,8 +86,10 @@ export class Yeelight {
   }
 
   startDiscovery (discoverer) {
+    console.log('discover')
     const yeelightLookup = new YeelightLookup()
     yeelightLookup.on('detected', async (lightBulb) => {
+      console.log('detected')
       await lightBulb.setPower(false)
 
       const id = lightBulb.id

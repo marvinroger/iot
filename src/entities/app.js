@@ -3,8 +3,8 @@ import {TYPES} from '../types'
 
 export class App {
   constructor (
-    logger, config, knex, httpServer, expressApp, wsServer, discoverer, devicePool,
-    deviceModel,
+    logger, config, knex, httpServer, expressApp, wsServer, discoverer, devicePool, roomPool,
+    deviceModel, roomModel,
     aqaraPlugin, yeelightPlugin, dummyPlugin
   ) {
     this._logger = logger.get('app')
@@ -15,8 +15,10 @@ export class App {
     this._wsServer = wsServer
     this._discoverer = discoverer
     this._devicePool = devicePool
+    this._roomPool = roomPool
 
     this._Device = deviceModel.get()
+    this._Room = roomModel.get()
 
     this._plugins = [
       aqaraPlugin,
@@ -77,11 +79,21 @@ export class App {
     for (const plugin of this._plugins) {
       plugin.startDiscovery(this._discoverer.getPluginCallback(plugin))
     }
+
+    /*
+     * Rooms
+     */
+
+    const rooms = await this._Room.fetchAll()
+
+    for (const roomModel of rooms.models) {
+      await this._roomPool.forge({ model: roomModel })
+    }
   }
 }
 
 helpers.annotate(App, [
-  TYPES.Logger, TYPES.Config, TYPES.Knex, TYPES.HttpServer, TYPES.ExpressApp, TYPES.WsServer, TYPES.Discoverer, TYPES.DevicePool,
-  TYPES.models.Device,
+  TYPES.Logger, TYPES.Config, TYPES.Knex, TYPES.HttpServer, TYPES.ExpressApp, TYPES.WsServer, TYPES.Discoverer, TYPES.DevicePool, TYPES.RoomPool,
+  TYPES.models.Device, TYPES.models.Room,
   TYPES.plugins.Aqara, TYPES.plugins.Yeelight, TYPES.plugins.Dummy
 ])

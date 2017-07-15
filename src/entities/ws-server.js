@@ -4,18 +4,13 @@ import {TYPES} from '../types'
 import WebSocket from 'ws'
 import cookie from 'cookie'
 
-import {generateMessage, parseMessage, MESSAGE_TYPES} from '../../common/ws-messages'
-import {EVENT_TYPES} from '../../common/event-types'
-import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
-import {ROOM_UPDATE_TYPES} from '../../common/room-update-types'
+import {parseMessage, MESSAGE_TYPES} from '../../common/ws-messages'
 
 export class WsServer {
-  constructor (httpServer, authTokenModel, room, meta, devicePool, requestResponder) {
+  constructor (httpServer, authTokenModel, requestResponder, updateBus) {
     const AuthToken = authTokenModel.get()
-    this._Room = room.get()
-    this._Meta = meta.get()
-    this._devicePool = devicePool
     this._requestResponder = requestResponder
+    this._updateBus = updateBus
 
     this._wsServer = new WebSocket.Server({
       server: httpServer.get(),
@@ -58,46 +53,20 @@ export class WsServer {
 
       // sending initial messages
 
-      for (const device of this._devicePool.getDevices()) {
-        ws.send(generateMessage({
-          type: MESSAGE_TYPES.EVENT,
-          event: EVENT_TYPES.DEVICE_UPDATE,
-          value: {
-            type: DEVICE_UPDATE_TYPES.DEVICE_ADDED,
-            id: device.getId(),
-            value: {
-              id: device.getId(),
-              online: device.getOnline(),
-              name: device.getName(),
-              properties: device.getProperties(),
-              actions: device.getActions(),
-              image: device.getImage()
-            }
-          }
-        }))
-      }
-
-      const roomsPositions = await this._Meta.where({ key: 'roomsPositions' }).fetch()
-      const rooms = await this._Room.fetchAll()
-
-      for (const room of rooms.models) {
-        const roomPosition = roomsPositions.attributes['value'].filter(elem => elem.i === room.id.toString())[0]
-        ws.send(generateMessage({
-          type: MESSAGE_TYPES.EVENT,
-          event: EVENT_TYPES.ROOM_UPDATE,
-          value: {
-            type: ROOM_UPDATE_TYPES.ROOM_ADDED,
-            id: room.id.toString(),
-            name: room.attributes['name'],
-            position: roomPosition
-          }
-        }))
-      }
+      this._requestResponder.sendInitialMessages(ws)
     })
+
+    this._updateBus.on('broadcast', message => this.broadcast(message))
   }
 
   getClients () {
     return this._clients
+  }
+
+  broadcast (message) {
+    for (const client of this._clients) {
+      client.ws.send(message)
+    }
   }
 
   get () {
@@ -105,4 +74,4 @@ export class WsServer {
   }
 }
 
-helpers.annotate(WsServer, [TYPES.HttpServer, TYPES.models.AuthToken, TYPES.models.Room, TYPES.models.Meta, TYPES.DevicePool, TYPES.RequestResponder])
+helpers.annotate(WsServer, [TYPES.HttpServer, TYPES.models.AuthToken, TYPES.RequestResponder, TYPES.UpdateBus])

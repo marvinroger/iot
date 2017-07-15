@@ -1,21 +1,57 @@
 import {helpers} from 'inversify-vanillajs-helpers'
 import {TYPES} from '../types'
 
-import {generateMessage, MESSAGE_TYPES} from '../../common/ws-messages'
+import {generateResponse, generateEvent} from '../../common/ws-messages'
 import {EVENT_TYPES} from '../../common/event-types'
+import {DEVICE_UPDATE_TYPES} from '../../common/device-update-types'
 import {ROOM_UPDATE_TYPES} from '../../common/room-update-types'
 
 export class RequestResponder {
-  constructor (wsBroadcaster, devicePool, roomModel, metaModel) {
-    this._wsBroadcaster = wsBroadcaster
+  constructor (devicePool, roomPool, roomModel, metaModel) {
     this._devicePool = devicePool
+    this._roomPool = roomPool
     this._Room = roomModel.get()
     this._Meta = metaModel.get()
   }
 
+  async sendInitialMessages (ws) {
+    for (const device of this._devicePool.getDevices()) {
+      ws.send(generateEvent(
+        EVENT_TYPES.DEVICE_UPDATE,
+        {
+          type: DEVICE_UPDATE_TYPES.DEVICE_ADDED,
+          id: device.getId(),
+          value: {
+            id: device.getId(),
+            online: device.getOnline(),
+            name: device.getName(),
+            properties: device.getProperties(),
+            actions: device.getActions(),
+            image: device.getImage()
+          }
+        }
+      ))
+    }
+
+    const roomsPositions = await this._Meta.where({ key: 'roomsPositions' }).fetch()
+
+    for (const room of this._roomPool.getRooms()) {
+      const roomPosition = roomsPositions.attributes['value'].filter(elem => elem.i === room.getId().toString())[0]
+      ws.send(generateEvent(
+        EVENT_TYPES.ROOM_UPDATE,
+        {
+          type: ROOM_UPDATE_TYPES.ROOM_ADDED,
+          id: room.getId().toString(),
+          name: room.getName(),
+          position: roomPosition
+        }
+      ))
+    }
+  }
+
   async handle ({ request, ws, user }) {
     const {method, parameters} = request
-    const sendResponse = response => ws.send(generateMessage({ type: MESSAGE_TYPES.RESPONSE, id: request.id, response }))
+    const sendResponse = response => ws.send(generateResponse(request, response))
 
     if (method === 'triggerAction') {
       const {action, deviceId, params} = parameters
@@ -33,49 +69,24 @@ export class RequestResponder {
     } else if (method === 'addRoom') {
       const {name} = parameters
 
-      const room = await this._Room.forge({
+      const roomModel = await this._Room.forge({
         name
       }).save()
 
-      const roomsPositions = await this._Meta.where({ key: 'roomsPositions' }).fetch()
-      const position = {x: 0, y: 0, w: 2, h: 2, i: room.id.toString()}
-      roomsPositions.attributes['value'].push(position)
-      await roomsPositions.save()
-
-      this._wsBroadcaster.broadcast(generateMessage({
-        type: MESSAGE_TYPES.EVENT,
-        event: EVENT_TYPES.ROOM_UPDATE,
-        value: {
-          type: ROOM_UPDATE_TYPES.ROOM_ADDED,
-          id: room.id.toString(),
-          name,
-          position
-        }
-      }))
+      const room = await this._roomPool.forge({ model: roomModel, addPosition: true })
 
       sendResponse({
-        id: room.id,
+        id: room.getId().toString(),
         name
       })
     } else if (method === 'updateRoomsPositions') {
       const {positions} = parameters
 
-      const roomsPositions = await this._Meta.where({ key: 'roomsPositions' }).fetch()
-      roomsPositions.attributes['value'] = positions
-      await roomsPositions.save()
-
-      this._wsBroadcaster.broadcast(generateMessage({
-        type: MESSAGE_TYPES.EVENT,
-        event: EVENT_TYPES.ROOM_UPDATE,
-        value: {
-          type: ROOM_UPDATE_TYPES.ROOM_POSITIONS_REPLACED,
-          positions
-        }
-      }))
+      await this._roomPool.updatePositions(positions)
 
       sendResponse(true)
     }
   }
 }
 
-helpers.annotate(RequestResponder, [TYPES.WsBroadcaster, TYPES.DevicePool, TYPES.models.Room, TYPES.models.Meta])
+helpers.annotate(RequestResponder, [TYPES.DevicePool, TYPES.RoomPool, TYPES.models.Room, TYPES.models.Meta])

@@ -52,7 +52,7 @@ export class Device {
   getOnline () { return this._online }
   setOnline (online) {
     this._online = online
-    this._updateBus.notify(DEVICE_UPDATE_TYPES.ONLINE_SET, this._id, online)
+    this._updateBus.notifyDeviceUpdate({ type: DEVICE_UPDATE_TYPES.ONLINE_SET, id: this._id, value: online })
   }
 
   getProperties () { return this._properties }
@@ -61,17 +61,17 @@ export class Device {
     const {error} = propertiesSchema.validate(merged)
     if (error) return this._logger.error(error)
     this._properties = merged
-    this._updateBus.notify(DEVICE_UPDATE_TYPES.PROPERTIES_SET, this._id, this._properties)
+    this._updateBus.notifyDeviceUpdate({ type: DEVICE_UPDATE_TYPES.PROPERTIES_SET, id: this._id, value: this._properties })
   }
   removeProperties (properties) {
     for (const property of properties) {
       delete this._properties[property]
     }
-    this._updateBus.notify(DEVICE_UPDATE_TYPES.PROPERTIES_REMOVED, this._id, properties)
+    this._updateBus.notifyDeviceUpdate({ type: DEVICE_UPDATE_TYPES.PROPERTIES_REMOVED, id: this._id, value: properties })
   }
   clearProperties () {
     this._properties = {}
-    this._updateBus.notify(DEVICE_UPDATE_TYPES.PROPERTIES_CLEARED, this._id)
+    this._updateBus.notifyDeviceUpdate({ type: DEVICE_UPDATE_TYPES.PROPERTIES_CLEARED, id: this._id })
   }
 
   getCredentials () { return this._credentials }
@@ -94,17 +94,17 @@ export class Device {
     const {error} = actionsSchema.validate(merged)
     if (error) return this._logger.error(error)
     this._actions = merged
-    this._updateBus.notify(DEVICE_UPDATE_TYPES.ACTIONS_SET, this._id, this._actions)
+    this._updateBus.notifyDeviceUpdate({ type: DEVICE_UPDATE_TYPES.ACTIONS_SET, id: this._id, value: this._actions })
   }
   removeActions (actions) {
     for (const action of actions) {
       delete this._actions[action]
     }
-    this._updateBus.notify(DEVICE_UPDATE_TYPES.ACTIONS_REMOVED, this._id, actions)
+    this._updateBus.notifyDeviceUpdate({ type: DEVICE_UPDATE_TYPES.ACTIONS_REMOVED, id: this._id, value: actions })
   }
   clearActions () {
     this._actions = {}
-    this._updateBus.notify(DEVICE_UPDATE_TYPES.ACTIONS_CLEARED, this._id)
+    this._updateBus.notifyDeviceUpdate({ type: DEVICE_UPDATE_TYPES.ACTIONS_CLEARED, id: this._id })
   }
 
   sync () {
